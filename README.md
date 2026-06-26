@@ -23,6 +23,17 @@
 
 ---
 
+## 🆕 最新更新 · What's New
+
+> **2026-06-26 · 新增 Agent Skill 版本** 🤖
+>
+> 现在除了网页版，本仓库还内置一个 **Claude Code / Codex 通用的 Agent Skill**（[`skill/`](skill/)）。
+> 一句话 **「运行我的文献雷达」** 就能跑完整条流水线、产出当日文献摘要 ——
+> **纯 Python 标准库、零依赖、免 AI API key**（由运行 skill 的模型本身完成联想扩展 / 相关性过滤 / 摘要 / 热点）。
+> 👉 用法见下方 **「🤖 Skill 版」** 章节与 [`skill/SKILL.md`](skill/SKILL.md)。
+
+---
+
 ## 🌟 这是什么 · What is this
 
 **auto-paper-collecter** 是一个轻量、自托管的**学术文献自动聚合工具**。
