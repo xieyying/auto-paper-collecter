@@ -1,0 +1,8 @@
+# runtime state — keep only the default config
+state/*.json
+!state/config.json
+
+# generated digests & python cache
+digests/
+__pycache__/
+*.pyc

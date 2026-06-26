@@ -1,0 +1,14 @@
+{
+  "keywords": ["large language models", "retrieval augmented generation"],
+  "domain": "computer science",
+  "sources": {
+    "arXiv": true,
+    "Crossref": true,
+    "Semantic Scholar": true,
+    "GitHub": true,
+    "RSS": true
+  },
+  "lookback_days": 5,
+  "max_per_source": 12,
+  "rss_feeds": ["http://export.arxiv.org/rss/cs.CL"]
+}

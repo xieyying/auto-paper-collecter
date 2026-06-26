@@ -121,6 +121,25 @@ python run.py
 
 ---
 
+## 🤖 Skill 版 · Use as an Agent Skill
+
+除了网页版，本仓库还内置一个 **Claude Code / Codex 通用的 Agent Skill**（[`skill/`](skill/) 目录）——
+直接对 AI 助手说一句"**运行我的文献雷达**"，它就会跑完整条流水线并产出当日文献摘要，
+而且**不需要任何 AI API key**（跑这个 skill 的模型本身就是那个 LLM）。
+
+```bash
+# 安装：把 skill/ 复制到你的 Claude Code skills 目录
+cp -r skill ~/.claude/skills/auto-paper-collecter
+# 编辑你的关键词
+$EDITOR ~/.claude/skills/auto-paper-collecter/state/config.json
+```
+
+然后对 Claude Code 说 **「运行我的文献雷达 / 今天有什么新论文」** 即可。脚本是**纯 Python 标准库、零依赖**；
+确定性的抓取交给脚本，LLM 的判断（联想扩展 / 相关性过滤 / 中文摘要 / 热点）由运行 skill 的模型完成
+（Claude Code → Claude；Codex → GPT）。细节见 [`skill/SKILL.md`](skill/SKILL.md)。
+
+---
+
 ## ⚙️ 配置 · Configuration
 
 所有配置都在 `.env`（参见 `.env.example`）：
