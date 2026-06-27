@@ -1,0 +1,18 @@
+# keep secrets & local cruft out of the image (.env is passed at runtime via env_file)
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite*
+.git/
+.github/
+data/
+*.zip
+.DS_Store
+skills/*/state/*.json
+!skills/*/state/config.json
+skills/*/digests/

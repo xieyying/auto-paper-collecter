@@ -28,6 +28,11 @@ Every morning, let AI sweep arXiv for you and bring the latest, most relevant pa
 
 ## 🆕 What's New
 
+> **2026-06-27 · Big UX upgrade v1.1** ✨
+>
+> 📱 Mobile layout · 🌙 dark mode · ⏳ refresh progress · 👍/👎 feedback learning (gets to know you) ·
+> sort / read filters · 🔔 WeChat / Telegram / Slack push · 🛰️ new HuggingFace & Papers-with-Code sources · 🐳 Docker deploy.
+
 > **2026-06-27 · Now listed on SkillHub** 🎉
 >
 > This skill is now live on **[SkillHub](https://skillhub.cn/skills/auto-paper-collecter)** — browse / get it right from the platform.
@@ -136,6 +141,8 @@ python run.py
 
 Open **http://localhost:8000** → go to "Settings" to add keywords → click "Save & Fetch".
 
+> 🐳 **Or one-line with Docker:** `cp .env.example .env` (optional) → `docker compose up -d`; the DB persists to `./data`.
+
 > [!TIP]
 > Use **English** keywords (higher recall across sources). The first fetch + summaries take ~1–3 min in the background; the page updates automatically when done.
 
@@ -195,6 +202,8 @@ Everything lives in `.env` (see `.env.example`):
 | **Crossref** | Journal/conference metadata | Incl. IEEE·ACM; metadata + abstract only |
 | **Semantic Scholar** | General scholarly search | Built-in TLDR; constrained to CS |
 | **GitHub** | Live repos / paper code | A supplementary signal |
+| **HuggingFace** | Trending preprints (upvoted) | Complements arXiv |
+| **Papers with Code** | Papers + official code | When the public API is up |
 | **RSS** | Academic news / blogs | Custom feeds supported |
 
 ---
@@ -224,9 +233,10 @@ Everything lives in `.env` (see `.env.example`):
 - [x] Hot topics (sub-fields + detailed summaries + paper lists)
 - [x] Library / notes / BibTeX / weekly report
 - [x] Browser + email push, scheduled jobs
-- [ ] More sources (OpenReview / bioRxiv …)
+- [x] More sources (HuggingFace · Papers with Code)
+- [x] One-click Docker deploy
+- [x] Mobile layout + dark mode + 👍/👎 feedback learning + multi-channel push
 - [ ] Multi-user + auth (PostgreSQL)
-- [ ] One-click Docker deploy
 - [ ] Mobile-friendly layout
 
 > Request features in [Issues](../../issues)! 🙌

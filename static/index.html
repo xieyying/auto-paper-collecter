@@ -844,7 +844,7 @@ class Component extends DCLogic {
     ].map(n => ({ ...n, onClick:set(n.key), style:this.navStyle(n.key, S.screen===n.key), iconStyle:this.iconStyle(S.screen===n.key) }));
 
     // source → badge colors (for remote items lacking explicit color)
-    const SRCMAP = { 'arXiv':['#B31B1B','#FBEAEA'], 'Google Scholar':['#1A73E8','#E8F0FE'], 'IEEE':['#00629B','#E1EEF6'], 'ACM':['#0F6FB5','#E3F0F8'], 'Crossref':['#5B6470','#EEF1F5'], 'GitHub':['#1F2328','#EAECEF'], '学术新闻':['#7C4DD9','#F0EAFB'] };
+    const SRCMAP = { 'arXiv':['#B31B1B','#FBEAEA'], 'Google Scholar':['#1A73E8','#E8F0FE'], 'IEEE':['#00629B','#E1EEF6'], 'ACM':['#0F6FB5','#E3F0F8'], 'Crossref':['#5B6470','#EEF1F5'], 'GitHub':['#1F2328','#EAECEF'], 'HuggingFace':['#D97706','#FEF3E2'], 'PapersWithCode':['#0EA5A5','#E1F5F5'], '学术新闻':['#7C4DD9','#F0EAFB'] };
     const colorize = (o) => { const c = SRCMAP[o.source] || SRCMAP['Crossref']; return { sourceColor: o.sourceColor || c[0], sourceBg: o.sourceBg || c[1] }; };
 
     // feed topic tabs — dynamic from data when remote
@@ -1014,6 +1014,8 @@ class Component extends DCLogic {
       'Crossref': { color:'#5B6470', bg:'#EEF1F5', desc:'期刊/会议元数据（含 IEEE·ACM）' },
       'Google Scholar': { color:'#1A73E8', bg:'#E8F0FE', desc:'综合学术检索' },
       'GitHub': { color:'#1F2328', bg:'#EAECEF', desc:'实时仓库 / 论文代码' },
+      'HuggingFace': { color:'#D97706', bg:'#FEF3E2', desc:'热门预印本' },
+      'PapersWithCode': { color:'#0EA5A5', bg:'#E1F5F5', desc:'论文 + 代码' },
       '学术新闻': { color:'#7C4DD9', bg:'#F0EAFB', desc:'机构 / 博客 RSS' },
     };
     const sources = Object.keys(SRC_META).map(name => {

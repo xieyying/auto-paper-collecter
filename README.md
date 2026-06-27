@@ -28,6 +28,11 @@
 
 ## 🆕 最新更新 · What's New
 
+> **2026-06-27 · 体验大升级 v1.1** ✨
+>
+> 📱 移动端适配 · 🌙 深色模式 · ⏳ 刷新进度 · 👍/👎 反馈学习（越用越懂你）· 排序 / 已读筛选 ·
+> 🔔 微信 / Telegram / Slack 多渠道推送 · 🛰️ 新增 HuggingFace 与 Papers with Code 源 · 🐳 Docker 一键部署。
+
 > **2026-06-27 · 已上架 SkillHub** 🎉
 >
 > 本 skill 现已登陆 **[SkillHub](https://skillhub.cn/skills/auto-paper-collecter)**，可在平台上直接浏览 / 获取与安装。
@@ -134,6 +139,8 @@ python run.py
 
 打开 **http://localhost:8000** → 进入「订阅设置」填关键词 → 点「保存并拓取」即可。
 
+> 🐳 **或用 Docker 一键起飞**：`cp .env.example .env`（可选）→ `docker compose up -d`，数据库会持久化到 `./data`。
+
 > [!TIP]
 > 关键词建议用**英文**（各源召回率更高）；界面与摘要是中文。首次抓取 + 摘要约需 1–3 分钟，后台进行，完成后页面自动出结果。
 
@@ -193,6 +200,8 @@ $EDITOR ~/.claude/skills/auto-paper-collecter/state/config.json   # 编辑你的
 | **Crossref** | 期刊/会议元数据 | 含 IEEE·ACM，仅元数据 + 摘要 |
 | **Semantic Scholar** | 综合学术检索 | 自带 TLDR；限定计算机领域 |
 | **GitHub** | 实时仓库 / 论文代码 | 作为补充信号 |
+| **HuggingFace** | 热门预印本（社区点赞） | 与 arXiv 互补 |
+| **Papers with Code** | 论文 + 官方代码 | 公共 API 可用时生效 |
 | **RSS** | 学术新闻 / 博客 | 可自定义订阅源 |
 
 ---
@@ -222,9 +231,10 @@ $EDITOR ~/.claude/skills/auto-paper-collecter/state/config.json   # 编辑你的
 - [x] 领域热点（细分方向 + 详细总结 + 论文清单）
 - [x] 收藏 / 笔记 / BibTeX / 每周报告
 - [x] 浏览器 + 邮件推送、定时任务
-- [ ] 更多数据源（OpenReview / bioRxiv …）
+- [x] 更多数据源（HuggingFace · Papers with Code）
+- [x] 一键 Docker 部署
+- [x] 移动端适配 + 深色模式 + 👍/👎 反馈学习 + 多渠道推送
 - [ ] 多用户 + 鉴权（PostgreSQL）
-- [ ] 一键 Docker 部署
 - [ ] 移动端适配
 
 > 欢迎在 [Issues](../../issues) 里提你想要的功能！🙌

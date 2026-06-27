@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    image: auto-paper-collecter
+    container_name: auto-paper-collecter
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env                 # AI key, push creds, SMTP, etc.
+        required: false            # runs without it (AI just disabled) — create from .env.example
+    environment:
+      - DATABASE_URL=sqlite:////app/data/scholarpulse.db
+    volumes:
+      - ./data:/app/data           # persist the SQLite DB across restarts
+    restart: unless-stopped

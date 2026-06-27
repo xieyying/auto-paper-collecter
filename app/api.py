@@ -44,6 +44,8 @@ SRC_STYLE = {
     "ACM":             {"color": "#0F6FB5", "bg": "#E3F0F8"},
     "Crossref":        {"color": "#5B6470", "bg": "#EEF1F5"},
     "GitHub":          {"color": "#1F2328", "bg": "#EAECEF"},
+    "HuggingFace":     {"color": "#D97706", "bg": "#FEF3E2"},
+    "PapersWithCode":  {"color": "#0EA5A5", "bg": "#E1F5F5"},
     "学术新闻":         {"color": "#7C4DD9", "bg": "#F0EAFB"},
 }
 KW_COLORS = ["#2A5BD7", "#1F8A5B", "#7C4DD9"]
@@ -155,8 +157,10 @@ def bootstrap(db: Session = Depends(get_db)):
                  "on": enabled.get(n, True),
                  "desc": {"arXiv": "预印本", "Crossref": "期刊/会议元数据",
                           "Google Scholar": "综合学术检索", "GitHub": "实时仓库/论文代码",
+                          "HuggingFace": "热门预印本", "PapersWithCode": "论文+代码",
                           "学术新闻": "RSS 动态"}.get(n, "")}
-                for n in ["arXiv", "Crossref", "Google Scholar", "GitHub", "学术新闻"]]
+                for n in ["arXiv", "Crossref", "Google Scholar", "GitHub",
+                          "HuggingFace", "PapersWithCode", "学术新闻"]]
 
     return {
         "configured": bool(keywords),

@@ -7,7 +7,8 @@ from sqlalchemy.exc import IntegrityError
 
 from ..db import SessionLocal
 from ..models import Paper, UserSettings, SavedItem
-from ..sources import arxiv, crossref, semanticscholar, rss_news, github
+from ..sources import (arxiv, crossref, semanticscholar, rss_news, github,
+                       huggingface, paperswithcode)
 from .dedup import dedup
 from .summarize import summarize
 from .smart import expand_queries, filter_relevant
@@ -34,6 +35,8 @@ SOURCE_FUNCS = {
     "Crossref": crossref.search,         # also yields IEEE/ACM-attributed items
     "Google Scholar": semanticscholar.search,
     "GitHub": github.search,             # real-time repos / paper code / awesome-lists
+    "HuggingFace": huggingface.search,   # trending, arXiv-linked papers
+    "PapersWithCode": paperswithcode.search,  # papers + linked code
     "学术新闻": rss_news.search,
 }
 
@@ -44,7 +47,7 @@ def get_or_create_settings(db):
         s = UserSettings(
             id=1, keywords="[]", domain="", sources=json.dumps({
                 "arXiv": True, "Crossref": True, "Google Scholar": True,
-                "GitHub": True, "学术新闻": True
+                "GitHub": True, "HuggingFace": True, "PapersWithCode": True, "学术新闻": True
             }), refresh_times="10:00,22:00", backfill_n=5,
             channels=json.dumps({"email": False, "browser": True}), email="",
         )
