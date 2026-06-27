@@ -20,12 +20,31 @@
   @keyframes slideOver{from{transform:translateX(100%)}to{transform:translateX(0)}}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes growBar{from{width:0}to{}}
+  /* ===== mobile / 移动端适配 ===== */
+  @media (max-width: 760px) {
+    html, body, #dc-root, #dc-root > .sc-host { height: auto !important; min-height: 100%; }
+    .ap-shell { flex-direction: column !important; height: auto !important; overflow: visible !important; }
+    .ap-aside { width: 100% !important; height: auto !important; border-right: none !important; border-bottom: 1px solid #EAEDF1; }
+    .ap-aside nav { flex-direction: row !important; flex-wrap: wrap; gap: 4px !important; }
+    .ap-aside > div:last-child { display: none !important; }   /* hide bulky footer card on phones */
+    .ap-main { height: auto !important; }
+    .ap-main > div { overflow: visible !important; }
+    .ap-main header { height: auto !important; flex-wrap: wrap; padding: 10px 14px !important; gap: 8px !important; }
+    .ap-main section { padding: 18px 14px 48px !important; }
+    .ap-trend-grid { grid-template-columns: 1fr !important; }
+  }
+  /* ===== dark mode / 深色模式 (whole-app invert + hue-rotate keeps it consistent;
+     re-invert media so images/screenshots stay correct) ===== */
+  html[data-theme="dark"]{color-scheme:dark;background:#0e1014}
+  html[data-theme="dark"] .ap-shell{filter:invert(0.95) hue-rotate(180deg);background:#0e1014!important}
+  html[data-theme="dark"] .ap-shell img,
+  html[data-theme="dark"] .ap-shell video{filter:invert(1) hue-rotate(180deg)}
 </style>
 </helmet>
-<div style="display:flex;height:100vh;width:100%;overflow:hidden;font-family:'Manrope',-apple-system,sans-serif;background:#F4F6F9;color:#16181D">
+<div class="ap-shell" style="display:flex;height:100vh;width:100%;overflow:hidden;font-family:'Manrope',-apple-system,sans-serif;background:#F4F6F9;color:#16181D">
 
   <!-- ===== SIDEBAR ===== -->
-  <aside style="width:248px;flex-shrink:0;background:#FFFFFF;border-right:1px solid #EAEDF1;display:flex;flex-direction:column;height:100vh">
+  <aside class="ap-aside" style="width:248px;flex-shrink:0;background:#FFFFFF;border-right:1px solid #EAEDF1;display:flex;flex-direction:column;height:100vh">
     <div style="padding:22px 20px 18px;display:flex;align-items:center;gap:11px">
       <div style="width:34px;height:34px;border-radius:9px;background:#2A5BD7;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <div style="width:15px;height:15px;border:2.4px solid #fff;border-radius:50%;border-bottom-color:transparent;transform:rotate(-45deg)"></div>
@@ -71,7 +90,7 @@
   </aside>
 
   <!-- ===== MAIN ===== -->
-  <main style="flex:1;display:flex;flex-direction:column;height:100vh;min-width:0">
+  <main class="ap-main" style="flex:1;display:flex;flex-direction:column;height:100vh;min-width:0">
 
     <!-- TOPBAR -->
     <header style="height:64px;flex-shrink:0;border-bottom:1px solid #EAEDF1;background:#FFFFFF;display:flex;align-items:center;gap:16px;padding:0 26px">
@@ -80,7 +99,13 @@
         <input value="{{ query }}" onInput="{{ setQuery }}" placeholder="搜索标题、作者、关键词…" style="width:100%;height:38px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 13px 0 34px;font-size:13.5px;font-family:inherit;color:#16181D;outline:none">
       </div>
       <div style="flex:1"></div>
-      <div style="font-size:12px;color:#8A929E;font-weight:500">更新于 今天 10:02</div>
+      <sc-if value="{{ refreshing }}" hint-placeholder-val="">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#2A5BD7;font-weight:600">
+          <span style="width:8px;height:8px;border-radius:50%;background:#2A5BD7;animation:fadeIn .7s ease infinite alternate"></span>
+          <span>{{ refreshStage }}</span>
+        </div>
+      </sc-if>
+      <button onClick="{{ toggleTheme }}" title="深色 / 浅色" style="height:38px;width:38px;display:flex;align-items:center;justify-content:center;background:#F1F4F8;color:#16181D;border:1px solid #E4E8ED;border-radius:10px;font-size:16px;cursor:pointer;flex-shrink:0" style-hover="background:#E7EBF1">{{ themeIcon }}</button>
       <button onClick="{{ refresh }}" style="height:38px;display:flex;align-items:center;gap:7px;background:#2A5BD7;color:#fff;border:none;border-radius:10px;padding:0 15px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer" style-hover="background:#1E48B5">
         <span style="font-size:14px">↻</span> {{ refreshLabel }}
       </button>
@@ -172,7 +197,7 @@
         </div>
 
         <div style="font-size:12px;font-weight:800;letter-spacing:0.06em;color:#A4ACB8;text-transform:uppercase;margin-bottom:14px">🔥 本周 Top 3 热点</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:34px">
+        <div class="ap-trend-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:34px">
           <sc-for list="{{ top3 }}" as="h" hint-placeholder-count="3">
             <div onClick="{{ h.onClick }}" style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s" style-hover="border-color:#C9D4EE;box-shadow:0 6px 22px -10px rgba(42,91,215,0.22)">
               <div style="position:absolute;top:-12px;right:-6px;font-family:'Source Serif 4',serif;font-size:78px;font-weight:700;color:#F0F3F8;line-height:1">{{ h.rank }}</div>
@@ -557,6 +582,7 @@ class Component extends DCLogic {
   setForm(patch) { this.setState(st => ({ form: { ...st.form, ...patch }, saveMsg: '' })); }
 
   async componentDidMount() {
+    try { const t = localStorage.getItem('ap_theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
     this.setState({ form: this.defaultForm() });   // editable even without backend
     const base = this.api();
     if (!base) return;                       // standalone design preview → keep demo data
@@ -1006,6 +1032,15 @@ class Component extends DCLogic {
       closePaper: () => this.setState({ selectedId:null }),
       refresh: () => this.apiRefresh(),
       refreshLabel: S.loading ? '刷新中…' : '立即刷新',
+      refreshing: !!(S.loading || (R && R.refreshing)),
+      refreshStage: (R && R.refreshStage) || '刷新中…',
+      themeIcon: (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark') ? '☀️' : '🌙',
+      toggleTheme: () => {
+        const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', cur);
+        try { localStorage.setItem('ap_theme', cur); } catch (e) {}
+        this.forceUpdate();
+      },
       query: S.query, setQuery: (e) => this.setState({ query: e.target.value }),
       trendOpen: !!S.trendSel,
       trend: S.trendSel ? {

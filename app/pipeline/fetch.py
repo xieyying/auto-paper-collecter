@@ -16,6 +16,19 @@ from .smart import expand_queries, filter_relevant
 # scheduler) can otherwise fire overlapping runs that race on papers.ext_id.
 _refresh_lock = asyncio.Lock()
 
+# Human-readable progress of the running refresh, surfaced to the UI via bootstrap.
+_progress = ""
+
+
+def _set_progress(msg):
+    global _progress
+    _progress = msg
+    print(f"[refresh] {msg}", flush=True)
+
+
+def get_progress():
+    return _progress
+
 SOURCE_FUNCS = {
     "arXiv": arxiv.search,
     "Crossref": crossref.search,         # also yields IEEE/ACM-attributed items
@@ -100,8 +113,10 @@ async def run_refresh(max_summaries: int = 40):
                 print("[refresh] no keywords set; skipping")
                 return {"new": 0, "keywords": 0}
 
+            kws = keywords[:3]
             raw = []
-            for kw in keywords[:3]:
+            for i, kw in enumerate(kws, 1):
+                _set_progress(f"抓取与过滤：{kw}（{i}/{len(kws)}）")
                 raw.extend(await _gather_for_keyword(kw, enabled, domain))
 
             # Collapse near-duplicates across sources (by DOI / title), then make the
@@ -129,6 +144,7 @@ async def run_refresh(max_summaries: int = 40):
             # running it in parallel is the big win.
             _EMPTY = {"tldr": "", "method": "", "contributions": []}
             to_summ = new_items[:max_summaries]
+            _set_progress(f"生成中文摘要（{len(to_summ)} 篇）…")
             sem = asyncio.Semaphore(5)
 
             async def _summ(it):
@@ -136,6 +152,7 @@ async def run_refresh(max_summaries: int = 40):
                     return await summarize(it)
 
             summaries = await asyncio.gather(*[_summ(it) for it in to_summ])
+            _set_progress("写入数据库…")
             paired = list(zip(to_summ, summaries)) + [(it, _EMPTY) for it in new_items[max_summaries:]]
 
             count = 0
@@ -164,6 +181,7 @@ async def run_refresh(max_summaries: int = 40):
             print(f"[refresh] {count} new papers across {len(keywords)} keywords", flush=True)
             return {"new": count, "keywords": len(keywords)}
         finally:
+            _set_progress("")
             db.close()
 
 

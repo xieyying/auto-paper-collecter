@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from .db import get_db, SessionLocal
 from .config import settings
 from .models import Paper, SavedItem, UserSettings, TrendSnapshot, WeeklyReport
-from .pipeline.fetch import run_refresh, get_or_create_settings, is_refreshing
+from .pipeline.fetch import run_refresh, get_or_create_settings, is_refreshing, get_progress
 from .pipeline.trends import compute_trends
 from .pipeline.report import build_weekly_report
 from .services.email import send_email
@@ -159,6 +159,7 @@ def bootstrap(db: Session = Depends(get_db)):
     return {
         "configured": bool(keywords),
         "refreshing": is_refreshing(),
+        "refreshStage": get_progress(),
         "feed": feed, "todayCount": today_count, "hasBackfill": has_backfill,
         "backfillN": s.backfill_n,
         "library": library,
