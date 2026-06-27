@@ -13,6 +13,7 @@ from .pipeline.fetch import run_refresh, get_or_create_settings, is_refreshing, 
 from .pipeline.trends import compute_trends
 from .pipeline.report import build_weekly_report
 from .services.email import send_email
+from .services import push
 
 
 def _tz():
@@ -203,6 +204,22 @@ def test_email(db: Session = Depends(get_db)):
     ok = send_email("ScholarPulse · 测试邮件", html, to)
     return {"sent": ok, "to": to or "(.env EMAIL_TO / SMTP_USER fallback)",
             "reason": "" if ok else "SMTP 未配置或发送失败，见后端日志 [email]"}
+
+
+@router.post("/test-push")
+async def test_push(db: Session = Depends(get_db)):
+    """Send a one-off test message to every enabled push channel (Telegram/Slack/WeChat)."""
+    s = get_or_create_settings(db)
+    channels = json.loads(s.channels or "{}")
+    text = push.digest_text(
+        [{"title": "测试推送 · auto-paper-collecter", "tldr": "如果你收到这条消息，说明该渠道配置成功 ✅"}],
+        title="📚 文献雷达 · 测试推送")
+    out = {}
+    for ch, fn in (("telegram", push.send_telegram), ("slack", push.send_slack),
+                   ("wechat", push.send_wechat)):
+        if channels.get(ch):
+            out[ch] = await fn(text)
+    return out or {"info": "未启用任何推送渠道（在设置里打开 Telegram/Slack/微信，并在 .env 填好凭据）"}
 
 
 @router.get("/trends")

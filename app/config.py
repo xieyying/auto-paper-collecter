@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     SEMANTIC_SCHOLAR_KEY: str = ""
     GITHUB_TOKEN: str = ""   # optional; raises GitHub API rate limit 10→30 req/min
 
+    # optional push channels (read by app/services/push.py)
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
+    SLACK_WEBHOOK_URL: str = ""
+    SERVERCHAN_KEY: str = ""   # WeChat via Server酱
+
     # email (optional)
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587

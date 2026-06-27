@@ -590,7 +590,7 @@ class Component extends DCLogic {
       keywords: (data.keywords || []).map(k => k.term),
       domain: data.domain || '',
       sources: Object.keys(srcMap).length ? srcMap : this.defaultForm().sources,
-      channels: data.channels && Object.keys(data.channels).length ? { email: !!data.channels.email, browser: !!data.channels.browser } : { email: false, browser: true },
+      channels: data.channels && Object.keys(data.channels).length ? { ...data.channels } : { email: false, browser: true },
       email: data.email || '', backfillN: data.backfillN || 5,
     };
   }
@@ -1026,6 +1026,9 @@ class Component extends DCLogic {
     const channels = [
       { icon:'✉️', name:'邮件摘要', detail:'每次刷新后把当天文献发到邮箱', key:'email', on: !!F.channels.email },
       { icon:'🔔', name:'浏览器通知', detail:'有今日新文献时弹出系统通知', key:'browser', on: !!F.channels.browser },
+      { icon:'✈️', name:'Telegram', detail:'定时推送到 Telegram（.env 配 BOT_TOKEN/CHAT_ID）', key:'telegram', on: !!F.channels.telegram },
+      { icon:'💬', name:'Slack', detail:'定时推送到 Slack（.env 配 Webhook URL）', key:'slack', on: !!F.channels.slack },
+      { icon:'🟢', name:'微信', detail:'经 Server酱 推送到微信（.env 配 SERVERCHAN_KEY）', key:'wechat', on: !!F.channels.wechat },
     ].map(c => ({ ...c, toggle: c.on?toggleOn:toggleOff, knob, onToggle: chanToggle(c.key) }));
 
     return {

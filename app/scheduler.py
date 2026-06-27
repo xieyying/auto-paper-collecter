@@ -7,11 +7,12 @@ from apscheduler.triggers.cron import CronTrigger
 
 from .config import settings
 from .db import SessionLocal
-from .models import TrendSnapshot
+from .models import TrendSnapshot, Paper
 from .pipeline.fetch import run_refresh, get_or_create_settings
 from .pipeline.trends import compute_trends
 from .pipeline.report import build_weekly_report
 from .services.email import send_feed_digest
+from .services import push
 
 _scheduler = None
 
@@ -47,6 +48,15 @@ def scheduled_refresh():
         # email digest if enabled (same helper the manual /api/refresh uses)
         status = send_feed_digest(db)
         print(f"[scheduler] digest email: {status}")
+        # multi-channel push (Telegram / Slack / WeChat) if any is enabled
+        channels = json.loads(s.channels or "{}")
+        if any(channels.get(c) for c in ("telegram", "slack", "wechat")):
+            since = dt.datetime.utcnow() - dt.timedelta(hours=14)
+            papers = (db.query(Paper).filter(Paper.fetched_at >= since)
+                      .order_by(Paper.published_at.desc()).limit(15).all())
+            data = [{"title": p.title, "tldr": p.tldr, "url": p.url} for p in papers]
+            if data:
+                print(f"[scheduler] push: {_run_async(push.push_all(data, channels))}")
     finally:
         db.close()
 
