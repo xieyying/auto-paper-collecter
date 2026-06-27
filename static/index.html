@@ -33,12 +33,35 @@
     .ap-main section { padding: 18px 14px 48px !important; }
     .ap-trend-grid { grid-template-columns: 1fr !important; }
   }
-  /* ===== dark mode / 深色模式 (whole-app invert + hue-rotate keeps it consistent;
-     re-invert media so images/screenshots stay correct) ===== */
-  html[data-theme="dark"]{color-scheme:dark;background:#0e1014}
-  html[data-theme="dark"] .ap-shell{filter:invert(0.95) hue-rotate(180deg);background:#0e1014!important}
-  html[data-theme="dark"] .ap-shell img,
-  html[data-theme="dark"] .ap-shell video{filter:invert(1) hue-rotate(180deg)}
+  /* ===== dark mode / 深色模式 — a curated theme that maps the inline palette
+     (rendered as normalized "rgb(...)") to elegant dark surfaces ===== */
+  html[data-theme="dark"]{color-scheme:dark}
+  html[data-theme="dark"] .ap-shell{background:#0d1117!important;color:#e6edf3!important}
+  /* page / section backgrounds (#F4F6F9) */
+  html[data-theme="dark"] [style*="background: rgb(244, 246, 249)"]{background:#0d1117!important}
+  /* elevated surfaces — cards / sidebar / header / panels (#FFFFFF) */
+  html[data-theme="dark"] [style*="background: rgb(255, 255, 255)"]{background:#161b22!important}
+  /* inputs / subtle fills (#F7F9FB #F1F4F8 #EEF1F5 #F0F3F8) */
+  html[data-theme="dark"] [style*="background: rgb(247, 249, 251)"],
+  html[data-theme="dark"] [style*="background: rgb(241, 244, 248)"],
+  html[data-theme="dark"] [style*="background: rgb(238, 241, 245)"],
+  html[data-theme="dark"] [style*="background: rgb(240, 243, 248)"]{background:#21262d!important}
+  /* accent-tint fills (#EAF0FD #F3F7FF) */
+  html[data-theme="dark"] [style*="background: rgb(234, 240, 253)"],
+  html[data-theme="dark"] [style*="background: rgb(243, 247, 255)"]{background:#172234!important}
+  /* dividers as background (#EAEDF1) */
+  html[data-theme="dark"] [style*="background: rgb(234, 237, 241)"]{background:#21262d!important}
+  /* borders (#EAEDF1 #E4E8ED) */
+  html[data-theme="dark"] [style*="rgb(234, 237, 241)"],
+  html[data-theme="dark"] [style*="rgb(228, 232, 237)"]{border-color:#30363d!important}
+  /* text — primary then progressively muted greys */
+  html[data-theme="dark"] [style*="color: rgb(22, 24, 29)"]{color:#e6edf3!important}
+  html[data-theme="dark"] [style*="color: rgb(42, 51, 64)"],
+  html[data-theme="dark"] [style*="color: rgb(71, 80, 89)"]{color:#c9d1d9!important}
+  html[data-theme="dark"] [style*="color: rgb(91, 100, 112)"]{color:#aab1bb!important}
+  html[data-theme="dark"] [style*="color: rgb(138, 146, 158)"],
+  html[data-theme="dark"] [style*="color: rgb(164, 172, 184)"]{color:#7d8590!important}
+  html[data-theme="dark"] input, html[data-theme="dark"] textarea{color:#e6edf3!important}
 </style>
 </helmet>
 <div class="ap-shell" style="display:flex;height:100vh;width:100%;overflow:hidden;font-family:'Manrope',-apple-system,sans-serif;background:#F4F6F9;color:#16181D">
@@ -1030,7 +1053,7 @@ class Component extends DCLogic {
       { icon:'🔔', name:'浏览器通知', detail:'有今日新文献时弹出系统通知', key:'browser', on: !!F.channels.browser },
       { icon:'✈️', name:'Telegram', detail:'定时推送到 Telegram（.env 配 BOT_TOKEN/CHAT_ID）', key:'telegram', on: !!F.channels.telegram },
       { icon:'💬', name:'Slack', detail:'定时推送到 Slack（.env 配 Webhook URL）', key:'slack', on: !!F.channels.slack },
-      { icon:'🟢', name:'微信', detail:'经 Server酱 推送到微信（.env 配 SERVERCHAN_KEY）', key:'wechat', on: !!F.channels.wechat },
+      { icon:'🟢', name:'微信', detail:'企业微信群机器人 或 Server酱（.env 配 WECHAT_WEBHOOK / SERVERCHAN_KEY）', key:'wechat', on: !!F.channels.wechat },
     ].map(c => ({ ...c, toggle: c.on?toggleOn:toggleOff, knob, onToggle: chanToggle(c.key) }));
 
     return {

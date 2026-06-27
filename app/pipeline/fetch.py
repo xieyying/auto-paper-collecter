@@ -99,7 +99,7 @@ async def _gather_for_keyword(kw, enabled, domain="", negatives=None):
     return items
 
 
-async def run_refresh(max_summaries: int = 40):
+async def run_refresh(max_summaries: int = 20):
     """Fetch all keywords from all enabled sources, summarize NEW papers, store."""
     if _refresh_lock.locked():
         print("[refresh] another refresh is already running; skipping")
@@ -147,21 +147,36 @@ async def run_refresh(max_summaries: int = 40):
                          and (not it.published_at or it.published_at <= horizon)]
             new_items.sort(key=lambda x: x.published_at or dt.datetime.min, reverse=True)
 
-            # Summarize the first `max_summaries` NEW papers concurrently (the LLM),
-            # capped so we don't flood the gateway. This is the slowest step, so
-            # running it in parallel is the big win.
+            # Summarize NEW PAPERS only (concurrently). GitHub repos aren't papers:
+            # use the repo description as the TLDR directly — no LLM call. This both
+            # fixes garbled repo "summaries" and cuts the slowest step's workload.
             _EMPTY = {"tldr": "", "method": "", "contributions": []}
-            to_summ = new_items[:max_summaries]
-            _set_progress(f"生成中文摘要（{len(to_summ)} 篇）…")
+
+            def _repo_card(it):
+                return {"tldr": (it.abstract or it.title or "")[:140], "method": "", "contributions": []}
+
+            papers = [it for it in new_items[:max_summaries] if it.source != "GitHub"]
+            total = len(papers)
+            _set_progress(f"生成中文摘要（0/{total}）…")
             sem = asyncio.Semaphore(5)
+            done = {"n": 0}
 
             async def _summ(it):
                 async with sem:
-                    return await summarize(it)
+                    s = await summarize(it)
+                done["n"] += 1
+                _set_progress(f"生成中文摘要（{done['n']}/{total}）…")
+                return s
 
-            summaries = await asyncio.gather(*[_summ(it) for it in to_summ])
+            summaries = await asyncio.gather(*[_summ(it) for it in papers])
+            summ_map = {id(it): s for it, s in zip(papers, summaries)}
             _set_progress("写入数据库…")
-            paired = list(zip(to_summ, summaries)) + [(it, _EMPTY) for it in new_items[max_summaries:]]
+            paired = []
+            for it in new_items:
+                if it.source == "GitHub":
+                    paired.append((it, _repo_card(it)))
+                else:
+                    paired.append((it, summ_map.get(id(it), _EMPTY)))
 
             count = 0
             for it, summ in paired:

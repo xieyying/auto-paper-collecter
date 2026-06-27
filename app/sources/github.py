@@ -20,10 +20,10 @@ async def search(keyword: str, limit: int = 12):
     tok = _token()
     if tok:
         headers["Authorization"] = f"Bearer {tok}"
-    # name,description only (README matches are too loose and pull in noise like
-    # personal star-lists). Still sorted by most-recently-updated for real-time.
-    params = {"q": f"{keyword} in:name,description",
-              "sort": "updated", "order": "desc", "per_page": limit}
+    # Quality over recency: require some traction (stars:>=10) and a name/description
+    # match, then rank by stars. This drops the personal-project / star-list noise.
+    params = {"q": f"{keyword} in:name,description stars:>=10",
+              "sort": "stars", "order": "desc", "per_page": limit}
     async with httpx.AsyncClient(timeout=30, follow_redirects=True) as c:
         r = await c.get(API, params=params, headers=headers)
         if r.status_code in (403, 422, 429):   # rate-limited / bad query -> skip

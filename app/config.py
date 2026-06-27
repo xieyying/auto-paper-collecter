@@ -16,7 +16,8 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str = ""
     TELEGRAM_CHAT_ID: str = ""
     SLACK_WEBHOOK_URL: str = ""
-    SERVERCHAN_KEY: str = ""   # WeChat via Server酱
+    WECHAT_WEBHOOK: str = ""    # WeChat via 企业微信群机器人 (recommended)
+    SERVERCHAN_KEY: str = ""    # WeChat via Server酱 (personal WeChat)
 
     # email (optional)
     SMTP_HOST: str = ""

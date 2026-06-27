@@ -22,9 +22,11 @@ async def summarize(item):
     if not item.abstract and not item.tldr:
         return _fallback(item)
     user = f"标题：{item.title}\n\n摘要：{item.abstract or item.tldr}"
+    # summaries are non-critical → fail fast (shorter timeout, 1 retry) and fall
+    # back to the source TLDR / abstract, so a flaky gateway can't stall a refresh.
     raw = await chat(
         [{"role": "system", "content": SYS}, {"role": "user", "content": user}],
-        temperature=0.2, max_tokens=500,
+        temperature=0.2, max_tokens=500, timeout=45, retries=1,
     )
     if not raw:
         return _fallback(item)

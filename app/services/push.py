@@ -46,18 +46,32 @@ async def send_slack(text):
 
 
 async def send_wechat(text, title="文献雷达 · 今日文献"):
-    """WeChat via Server酱 (https://sct.ftqq.com). SERVERCHAN_KEY like 'SCTxxxx'."""
+    """WeChat push, two ways (try in order):
+      A) 企业微信群机器人 (WECHAT_WEBHOOK) — recommended; a group robot webhook,
+         no third-party signup. Get it from a WeChat Work group → 添加群机器人.
+      B) Server酱 (SERVERCHAN_KEY, like 'SCTxxxx') — pushes to your personal WeChat
+         via https://sct.ftqq.com."""
+    hook = settings.WECHAT_WEBHOOK
+    if hook:
+        try:
+            async with httpx.AsyncClient(timeout=20) as c:
+                r = await c.post(hook, json={"msgtype": "text",
+                                             "text": {"content": (title + "\n\n" + text)[:2000]}})
+                r.raise_for_status()
+            return {"sent": True, "via": "企业微信群机器人"}
+        except Exception as e:
+            return {"sent": False, "reason": f"企业微信: {e}"}
     key = settings.SERVERCHAN_KEY
-    if not key:
-        return {"sent": False, "reason": "微信（Server酱）未配置（SERVERCHAN_KEY）"}
-    try:
-        async with httpx.AsyncClient(timeout=20) as c:
-            r = await c.post(f"https://sctapi.ftqq.com/{key}.send",
-                             data={"title": title, "desp": text})
-            r.raise_for_status()
-        return {"sent": True}
-    except Exception as e:
-        return {"sent": False, "reason": str(e)}
+    if key:
+        try:
+            async with httpx.AsyncClient(timeout=20) as c:
+                r = await c.post(f"https://sctapi.ftqq.com/{key}.send",
+                                 data={"title": title, "desp": text})
+                r.raise_for_status()
+            return {"sent": True, "via": "Server酱"}
+        except Exception as e:
+            return {"sent": False, "reason": f"Server酱: {e}"}
+    return {"sent": False, "reason": "微信未配置（企业微信 WECHAT_WEBHOOK 或 Server酱 SERVERCHAN_KEY 二选一）"}
 
 
 async def push_all(papers, channels):
