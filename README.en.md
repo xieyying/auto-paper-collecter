@@ -48,7 +48,7 @@ Every morning, let AI sweep arXiv for you and bring the latest, most relevant pa
 >
 > Besides the web app, the repo ships a **Claude Code / Codex–compatible Agent Skill** — just say **"run my paper radar"**
 > and it runs the whole pipeline and produces today's digest, **pure Python stdlib, zero deps, no AI API key**.
-> **Install in one line:** `/plugin marketplace add PenghaoJiang/auto-paper-collecter` → `/plugin install auto-paper-collecter@auto-paper-collecter`.
+> **Install in one line:** `/plugin marketplace add OvOhao/auto-paper-collecter` → `/plugin install auto-paper-collecter@auto-paper-collecter`.
 > Also added [`AGENTS.md`](AGENTS.md) so **Codex / OpenAI agents work out of the box**. 👉 See **"🤖 Use as an Agent Skill"** below.
 
 ---
@@ -131,7 +131,7 @@ flowchart LR
 
 ```bash
 # 1) Clone & enter
-git clone https://github.com/PenghaoJiang/auto-paper-collecter.git
+git clone https://github.com/OvOhao/auto-paper-collecter.git
 cd auto-paper-collecter
 
 # 2) venv & deps
@@ -164,7 +164,7 @@ with **no AI API key needed** (the model running the skill *is* the LLM).
 **Option 1 · Install as a Claude Code plugin (recommended, one-liner)**
 
 ```bash
-/plugin marketplace add PenghaoJiang/auto-paper-collecter
+/plugin marketplace add OvOhao/auto-paper-collecter
 /plugin install auto-paper-collecter@auto-paper-collecter
 ```
 

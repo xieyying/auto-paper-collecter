@@ -12,7 +12,7 @@
       "description": "Personal research-paper radar — daily multi-source paper digest (arXiv/Crossref/Semantic Scholar/GitHub/RSS), agent-driven, no API key.",
       "version": "1.0.0",
       "license": "MIT",
-      "homepage": "https://github.com/PenghaoJiang/auto-paper-collecter",
+      "homepage": "https://github.com/OvOhao/auto-paper-collecter",
       "keywords": ["arxiv", "research", "papers", "literature-review", "rag", "research-assistant"]
     }
   ]

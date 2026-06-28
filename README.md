@@ -48,7 +48,7 @@
 >
 > 除了网页版，本仓库内置一个 **Claude Code / Codex 通用的 Agent Skill** —— 一句话 **「运行我的文献雷达」**
 > 就能跑完整条流水线、产出当日文献摘要，**纯 Python 标准库、零依赖、免 AI API key**。
-> **一行命令安装**：`/plugin marketplace add PenghaoJiang/auto-paper-collecter` → `/plugin install auto-paper-collecter@auto-paper-collecter`。
+> **一行命令安装**：`/plugin marketplace add OvOhao/auto-paper-collecter` → `/plugin install auto-paper-collecter@auto-paper-collecter`。
 > 同时新增 [`AGENTS.md`](AGENTS.md)，让 **Codex / OpenAI 等 agent 也能开箱即用**。👉 详见下方 **「🤖 Skill 版」**。
 
 ---
@@ -129,7 +129,7 @@ flowchart LR
 
 ```bash
 # 1) 克隆并进入
-git clone https://github.com/PenghaoJiang/auto-paper-collecter.git
+git clone https://github.com/OvOhao/auto-paper-collecter.git
 cd auto-paper-collecter
 
 # 2) 建虚拟环境 & 装依赖
@@ -162,7 +162,7 @@ python run.py
 **方式一 · 作为 Claude Code 插件安装（推荐，一行命令搞定）**
 
 ```bash
-/plugin marketplace add PenghaoJiang/auto-paper-collecter
+/plugin marketplace add OvOhao/auto-paper-collecter
 /plugin install auto-paper-collecter@auto-paper-collecter
 ```
 
