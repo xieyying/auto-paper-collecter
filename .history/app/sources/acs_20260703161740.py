@@ -45,7 +45,7 @@ async def search(keyword: str, rows: int = 15):
                 "sort": "published",
                 "order": "desc",
                 "rows": max(3, rows // len(ACS_ISSNS)),
-                "select": "DOI,title,author,abstract,URL,container-title,published,type,ISSN,issn-type",
+                "select": "DOI,title,author,abstract,URL,container-title,published,type",
             }
             try:
                 r = await c.get(API, params=params, headers=headers)
@@ -77,15 +77,7 @@ async def search(keyword: str, rows: int = 15):
                     nm = " ".join(x for x in [a.get("given", ""), a.get("family", "")] if x)
                     if nm:
                         authors.append(nm)
-                                # Extract ISSN
-                issn_list = it.get("ISSN") or []
-                issn_val = issn_list[0] if issn_list else ""
-                eissn_val = ""
-                for itype in (it.get("issn-type") or []):
-                    if itype.get("type") == "electronic":
-                        eissn_val = itype.get("value", "")
-
-        items.append(RawItem(
+                items.append(RawItem(
                     source="ACS",
                     title=" ".join(title_list[0].split()),
                     abstract=_clean_abstract(it.get("abstract", "")),

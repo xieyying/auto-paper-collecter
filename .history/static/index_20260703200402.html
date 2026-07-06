@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{margin:0}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#D5D9E0;border-radius:6px;border:3px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#B9C0CB;background-clip:content-box}
+  @keyframes slideOver{from{transform:translateX(100%)}to{transform:translateX(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes growBar{from{width:0}to{}}
+  /* ===== mobile / 移动端适配 ===== */
+  @media (max-width: 760px) {
+    html, body, #dc-root, #dc-root > .sc-host { height: auto !important; min-height: 100%; }
+    .ap-shell { flex-direction: column !important; height: auto !important; overflow: visible !important; }
+    .ap-aside { width: 100% !important; height: auto !important; border-right: none !important; border-bottom: 1px solid #EAEDF1; }
+    .ap-aside nav { flex-direction: row !important; flex-wrap: wrap; gap: 4px !important; }
+    .ap-aside > div:last-child { display: none !important; }   /* hide bulky footer card on phones */
+    .ap-main { height: auto !important; }
+    .ap-main > div { overflow: visible !important; }
+    .ap-main header { height: auto !important; flex-wrap: wrap; padding: 10px 14px !important; gap: 8px !important; }
+    .ap-main section { padding: 18px 14px 48px !important; }
+    .ap-trend-grid { grid-template-columns: 1fr !important; }
+  }
+  /* ===== dark mode / 深色模式 — a curated theme that maps the inline palette
+     (rendered as normalized "rgb(...)") to elegant dark surfaces ===== */
+  html[data-theme="dark"]{color-scheme:dark}
+  html[data-theme="dark"] .ap-shell{background:#0d1117!important;color:#e6edf3!important}
+  /* page / section backgrounds (#F4F6F9) */
+  html[data-theme="dark"] [style*="background: rgb(244, 246, 249)"]{background:#0d1117!important}
+  /* elevated surfaces — cards / sidebar / header / panels (#FFFFFF) */
+  html[data-theme="dark"] [style*="background: rgb(255, 255, 255)"]{background:#161b22!important}
+  /* inputs / subtle fills (#F7F9FB #F1F4F8 #EEF1F5 #F0F3F8) */
+  html[data-theme="dark"] [style*="background: rgb(247, 249, 251)"],
+  html[data-theme="dark"] [style*="background: rgb(241, 244, 248)"],
+  html[data-theme="dark"] [style*="background: rgb(238, 241, 245)"],
+  html[data-theme="dark"] [style*="background: rgb(240, 243, 248)"]{background:#21262d!important}
+  /* accent-tint fills (#EAF0FD #F3F7FF) */
+  html[data-theme="dark"] [style*="background: rgb(234, 240, 253)"],
+  html[data-theme="dark"] [style*="background: rgb(243, 247, 255)"]{background:#172234!important}
+  /* dividers as background (#EAEDF1) */
+  html[data-theme="dark"] [style*="background: rgb(234, 237, 241)"]{background:#21262d!important}
+  /* borders (#EAEDF1 #E4E8ED) */
+  html[data-theme="dark"] [style*="rgb(234, 237, 241)"],
+  html[data-theme="dark"] [style*="rgb(228, 232, 237)"]{border-color:#30363d!important}
+  /* text — primary then progressively muted greys */
+  html[data-theme="dark"] [style*="color: rgb(22, 24, 29)"]{color:#e6edf3!important}
+  html[data-theme="dark"] [style*="color: rgb(42, 51, 64)"],
+  html[data-theme="dark"] [style*="color: rgb(71, 80, 89)"]{color:#c9d1d9!important}
+  html[data-theme="dark"] [style*="color: rgb(91, 100, 112)"]{color:#aab1bb!important}
+  html[data-theme="dark"] [style*="color: rgb(138, 146, 158)"],
+  html[data-theme="dark"] [style*="color: rgb(164, 172, 184)"]{color:#7d8590!important}
+  html[data-theme="dark"] input, html[data-theme="dark"] textarea{color:#e6edf3!important}
+</style>
+</helmet>
+<div class="ap-shell" style="display:flex;height:100vh;width:100%;overflow:hidden;font-family:'Manrope',-apple-system,sans-serif;background:#F4F6F9;color:#16181D">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="ap-aside" style="width:248px;flex-shrink:0;background:#FFFFFF;border-right:1px solid #EAEDF1;display:flex;flex-direction:column;height:100vh">
+    <div style="padding:22px 20px 18px;display:flex;align-items:center;gap:11px">
+      <div style="width:34px;height:34px;border-radius:9px;background:#2A5BD7;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:15px;height:15px;border:2.4px solid #fff;border-radius:50%;border-bottom-color:transparent;transform:rotate(-45deg)"></div>
+      </div>
+      <div>
+        <div style="font-size:15px;font-weight:800;letter-spacing:-0.2px">ScholarPulse</div>
+        <div style="font-size:11px;color:#8A929E;font-weight:500;margin-top:1px">文献雷达</div>
+      </div>
+    </div>
+
+    <nav style="padding:6px 12px;display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ nav }}" as="item" hint-placeholder-count="5">
+        <div onClick="{{ item.onClick }}" style="{{ item.style }}">
+          <span style="{{ item.iconStyle }}">{{ item.icon }}</span>
+          <span style="flex:1">{{ item.label }}</span>
+          <sc-if value="{{ item.badge }}" hint-placeholder-val="">
+            <span style="font-size:11px;font-weight:700;background:#2A5BD7;color:#fff;border-radius:20px;padding:1px 7px;min-width:20px;text-align:center">{{ item.badge }}</span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </nav>
+
+    <div style="margin-top:auto;padding:16px 16px 18px">
+      <div style="background:#F4F6F9;border:1px solid #EAEDF1;border-radius:12px;padding:14px 15px">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px">
+          <span style="width:7px;height:7px;border-radius:50%;background:#1F8A5B;box-shadow:0 0 0 3px rgba(31,138,91,0.15)"></span>
+          <span style="font-size:12px;font-weight:700;color:#16181D">自动刷新已开启</span>
+        </div>
+        <div style="font-size:11.5px;color:#5B6470;line-height:1.55">
+          上次 · 今天 10:02 <span style="color:#1F8A5B;font-weight:600">已完成</span><br>
+          下次 · 今天 22:00
+        </div>
+        <div style="height:1px;background:#EAEDF1;margin:11px 0"></div>
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:30px;height:30px;border-radius:50%;background:#2A5BD7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">SP</div>
+          <div style="min-width:0">
+            <div style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">本地用户</div>
+            <div style="font-size:11px;color:#8A929E">免费版</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="ap-main" style="flex:1;display:flex;flex-direction:column;height:100vh;min-width:0">
+
+    <!-- TOPBAR -->
+    <header style="height:64px;flex-shrink:0;border-bottom:1px solid #EAEDF1;background:#FFFFFF;display:flex;align-items:center;gap:16px;padding:0 26px">
+      <div style="position:relative;flex:1;max-width:420px">
+        <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;color:#A4ACB8">⌕</span>
+        <input value="{{ query }}" onInput="{{ setQuery }}" placeholder="搜索标题、作者、关键词…" style="width:100%;height:38px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 13px 0 34px;font-size:13.5px;font-family:inherit;color:#16181D;outline:none">
+      </div>
+      <div style="flex:1"></div>
+      <sc-if value="{{ refreshing }}" hint-placeholder-val="">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#2A5BD7;font-weight:600">
+          <span style="width:8px;height:8px;border-radius:50%;background:#2A5BD7;animation:fadeIn .7s ease infinite alternate"></span>
+          <span>{{ refreshStage }}</span>
+        </div>
+      </sc-if>
+      <button onClick="{{ toggleTheme }}" title="深色 / 浅色" style="height:38px;width:38px;display:flex;align-items:center;justify-content:center;background:#F1F4F8;color:#16181D;border:1px solid #E4E8ED;border-radius:10px;font-size:16px;cursor:pointer;flex-shrink:0" style-hover="background:#E7EBF1">{{ themeIcon }}</button>
+      <button onClick="{{ refresh }}" style="height:38px;display:flex;align-items:center;gap:7px;background:#2A5BD7;color:#fff;border:none;border-radius:10px;padding:0 15px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer" style-hover="background:#1E48B5">
+        <span style="font-size:14px">↻</span> {{ refreshLabel }}
+      </button>
+    </header>
+
+    <!-- SCROLL AREA -->
+    <div style="flex:1;overflow-y:auto;overflow-x:hidden">
+
+      <!-- ========== FEED ========== -->
+      <sc-if value="{{ isFeed }}" hint-placeholder-val="{{ true }}">
+      <section style="max-width:900px;margin:0 auto;padding:30px 34px 60px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px">
+          <h1 style="font-size:25px;font-weight:800;letter-spacing:-0.5px">今日文献流</h1>
+          <span style="font-size:13px;color:#8A929E;font-weight:600">2026年6月24日 · 周三</span>
+        </div>
+        <p style="font-size:13.5px;color:#5B6470;margin-bottom:14px">为你的 3 个关键词找到 <b style="color:#2A5BD7">{{ todayCount }}</b> 篇今日新内容 · 来自 arXiv、Google Scholar、IEEE、ACM、学术新闻</p>
+
+        <sc-if value="{{ notConfigured }}" hint-placeholder-val="">
+        <div style="background:#fff;border:1px dashed #C9D4EE;border-radius:16px;padding:34px 30px;text-align:center;margin-bottom:18px">
+          <div style="font-size:30px;margin-bottom:10px">🔭</div>
+          <div style="font-size:17px;font-weight:800;margin-bottom:6px">还没有设置关键词</div>
+          <div style="font-size:13.5px;color:#5B6470;line-height:1.6;max-width:420px;margin:0 auto 18px">前往「订阅设置」填入最多 3 个关键词和领域，保存后点「保存并拓取」，即可看到真实文献。</div>
+          <button onClick="{{ goSettings }}" style="height:40px;background:#2A5BD7;color:#fff;border:none;border-radius:10px;font-size:13.5px;font-weight:700;font-family:inherit;padding:0 20px;cursor:pointer" style-hover="background:#1E48B5">前往订阅设置 →</button>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ hasBackfill }}" hint-placeholder-val="">
+        <div style="display:flex;align-items:flex-start;gap:9px;background:#FFF8EC;border:1px solid #F3E4C0;border-radius:11px;padding:11px 14px;margin-bottom:18px">
+          <span style="font-size:14px;line-height:1.4">🕘</span>
+          <span style="font-size:12.5px;color:#8A6D24;line-height:1.55">部分关键词今日暂无新文献，已按你的设置回填最近 <b>{{ backfillN }}</b> 篇最新内容（见下方<b>「最新回填」</b>标记）。可在 <span style="font-weight:700;color:#2A5BD7;cursor:pointer" onClick="{{ goSettings }}">订阅设置</span> 中调整。</span>
+        </div>
+        </sc-if>
+
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <sc-for list="{{ topicTabs }}" as="t" hint-placeholder-count="4">
+            <button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }} <span style="opacity:0.55;font-weight:600">{{ t.count }}</span></button>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;align-items:center">
+          <sc-for list="{{ readTabs }}" as="r" hint-placeholder-count="3">
+            <span onClick="{{ r.onClick }}" style="{{ r.style }}">{{ r.label }}</span>
+          </sc-for>
+          <div style="flex:1"></div>
+          <span style="font-size:12px;color:#8A929E;font-weight:600">排序</span>
+          <sc-for list="{{ sortTabs }}" as="s" hint-placeholder-count="3">
+            <span onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</span>
+          </sc-for>
+          <sc-if value="{{ hasIgnored }}" hint-placeholder-val="">
+            <span onClick="{{ toggleIgnored }}" style="{{ ignoredStyle }}">{{ ignoredLabel }}</span>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ feed }}" as="p" hint-placeholder-count="5">
+            <article onClick="{{ p.open }}" style="background:#fff;border:1px solid #EAEDF1;border-radius:14px;padding:19px 21px;cursor:pointer;transition:border-color .15s,box-shadow .15s" style-hover="border-color:#C9D4EE;box-shadow:0 6px 22px -10px rgba(42,91,215,0.22)">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;color:{{ p.sourceColor }};background:{{ p.sourceBg }}">{{ p.source }}</span>
+                <span style="font-size:12px;color:#A4ACB8;font-weight:600">{{ p.ago }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#2A5BD7;font-weight:600">{{ p.date }}</span>
+                <sc-if value="{{ p.isBackfill }}" hint-placeholder-val="">
+                  <span style="font-size:11px;font-weight:700;color:#B5840E;background:#FBF1D6;border-radius:5px;padding:2px 7px">最新回填</span>
+                </sc-if>
+                <div style="flex:1"></div>
+                <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px">{{ p.topic }}</span>
+              </div>
+              <h3 style="font-family:'Source Serif 4',serif;font-size:18.5px;font-weight:600;line-height:1.32;letter-spacing:-0.2px;margin-bottom:7px;text-wrap:pretty">{{ p.title }}</h3>
+              <div style="font-size:12.5px;color:#8A929E;font-weight:500;margin-bottom:10px">{{ p.authors }} · {{ p.venue }}</div>
+              <p style="font-size:13.5px;color:#475059;line-height:1.62;text-wrap:pretty">{{ p.abstract }}</p>
+              <div style="display:flex;align-items:center;gap:7px;margin-top:14px">
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#2A5BD7;background:#EAF0FD;border-radius:7px;padding:5px 10px">✦ AI 摘要</span>
+                <div style="flex:1"></div>
+                <span onClick="{{ p.thumbUp }}" title="相关，多推这类" style="{{ p.upStyle }}">👍</span>
+                <span onClick="{{ p.thumbDown }}" title="不相关，少推这类" style="{{ p.downStyle }}">👎</span>
+                <span onClick="{{ p.toggleSave }}" style="{{ p.saveStyle }}">{{ p.saveIcon }} 收藏</span>
+                <a href="{{ p.url }}" target="_blank" rel="noopener" onClick="{{ p.stopProp }}" style="font-size:12px;font-weight:700;color:#2A5BD7;padding:5px 11px;border-radius:7px;border:1px solid #C9D9F5;background:#F3F7FF;text-decoration:none;display:inline-flex;align-items:center;gap:4px" style-hover="background:#E6EEFD;border-color:#A9C2EF">↗ 访问原文</a>
+              </div>
+            </article>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <!-- ========== TRENDS ========== -->
+      <sc-if value="{{ isTrends }}" hint-placeholder-val="">
+      <section style="max-width:960px;margin:0 auto;padding:30px 34px 60px">
+        <h1 style="font-size:25px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px">领域热点分析</h1>
+        <p style="font-size:13.5px;color:#5B6470;margin-bottom:22px">在你设定的领域内按细分方向统计近 7 天发文增量，自动选出 Top 3 热点并生成方向总结。</p>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #E4E8ED;border-radius:10px;padding:7px 9px 7px 14px">
+            <span style="font-size:12px;color:#8A929E;font-weight:600">领域</span>
+            <input value="{{ domain }}" onInput="{{ setDomain }}" placeholder="输入你的领域，如：人工智能" style="width:240px;height:30px;border:1px solid #E4E8ED;border-radius:8px;background:#F7F9FB;padding:0 11px;font-size:13.5px;font-weight:700;font-family:inherit;color:#16181D;outline:none">
+          </div>
+          <div style="display:flex;background:#EEF1F5;border-radius:10px;padding:3px">
+            <span onClick="{{ setWindow7 }}" style="{{ win7Style }}">近 7 天</span>
+            <span onClick="{{ setWindow30 }}" style="{{ win30Style }}">近 30 天</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:26px">
+          <span style="font-size:11.5px;color:#A4ACB8;font-weight:600;align-self:center">快选：</span>
+          <sc-for list="{{ domainChips }}" as="d" hint-placeholder-count="4">
+            <span onClick="{{ d.onClick }}" style="{{ d.style }}">{{ d.label }}</span>
+          </sc-for>
+        </div>
+
+        <div style="font-size:12px;font-weight:800;letter-spacing:0.06em;color:#A4ACB8;text-transform:uppercase;margin-bottom:14px">🔥 本周 Top 3 热点</div>
+        <div class="ap-trend-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:34px">
+          <sc-for list="{{ top3 }}" as="h" hint-placeholder-count="3">
+            <div onClick="{{ h.onClick }}" style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s" style-hover="border-color:#C9D4EE;box-shadow:0 6px 22px -10px rgba(42,91,215,0.22)">
+              <div style="position:absolute;top:-12px;right:-6px;font-family:'Source Serif 4',serif;font-size:78px;font-weight:700;color:#F0F3F8;line-height:1">{{ h.rank }}</div>
+              <div style="position:relative">
+                <div style="font-size:15.5px;font-weight:800;letter-spacing:-0.2px;margin-bottom:3px">{{ h.name }}</div>
+                <div style="font-size:11.5px;color:#A4ACB8;font-weight:600;margin-bottom:14px">{{ h.en }}</div>
+                <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:3px">
+                  <span style="font-size:30px;font-weight:800;color:#2A5BD7;letter-spacing:-1px">+{{ h.delta }}</span>
+                  <span style="font-size:12px;color:#5B6470;font-weight:600">篇 / 7天</span>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:#1F8A5B;margin-bottom:14px">↑ {{ h.growth }}% 环比</div>
+                <p style="font-size:12.5px;color:#475059;line-height:1.6">{{ h.summary }}</p>
+                <div style="margin-top:14px;font-size:12px;font-weight:700;color:#2A5BD7">查看方向总结 →</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:12px;font-weight:800;letter-spacing:0.06em;color:#A4ACB8;text-transform:uppercase;margin-bottom:14px">全部细分方向 · 发文增量</div>
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;display:flex;flex-direction:column;gap:16px">
+          <sc-for list="{{ trendBars }}" as="b" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:16px">
+              <div style="width:150px;flex-shrink:0">
+                <div style="font-size:13.5px;font-weight:700">{{ b.name }}</div>
+                <div style="font-size:11px;color:#A4ACB8;font-weight:600">{{ b.en }}</div>
+              </div>
+              <div style="flex:1;height:24px;background:#F1F4F8;border-radius:7px;overflow:hidden">
+                <div style="height:100%;width:{{ b.pct }};background:{{ b.color }};border-radius:7px;transition:width .6s ease"></div>
+              </div>
+              <div style="width:96px;text-align:right;flex-shrink:0">
+                <span style="font-size:14px;font-weight:800;color:#16181D">+{{ b.delta }}</span>
+                <span style="font-size:11.5px;font-weight:700;color:#1F8A5B;margin-left:6px">↑{{ b.growth }}%</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <!-- ========== WEEKLY REPORT ========== -->
+      <sc-if value="{{ isReport }}" hint-placeholder-val="">
+      <section style="max-width:880px;margin:0 auto;padding:30px 34px 60px">
+        <div style="background:linear-gradient(120deg,#2A5BD7,#3F6FE5);border-radius:20px;padding:30px 32px;color:#fff;margin-bottom:26px;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.08)"></div>
+          <div style="position:relative">
+            <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.8;margin-bottom:8px">每周回顾 · 第 25 周</div>
+            <h1 style="font-size:27px;font-weight:800;letter-spacing:-0.6px;margin-bottom:6px">2026 年 6 月 16 – 22 日 周报</h1>
+            <p style="font-size:14px;opacity:0.9;line-height:1.6;max-width:560px">本周你关注的三个方向整体活跃度上升，C2Rust 与漏洞修复延续高热度。以下是为你聚合的精选摘要。</p>
+            <div style="display:flex;gap:30px;margin-top:22px">
+              <div><div style="font-size:26px;font-weight:800">142</div><div style="font-size:12px;opacity:0.85;font-weight:600">本周新文献</div></div>
+              <div><div style="font-size:26px;font-weight:800">5</div><div style="font-size:12px;opacity:0.85;font-weight:600">内容来源</div></div>
+              <div><div style="font-size:26px;font-weight:800">C2Rust</div><div style="font-size:12px;opacity:0.85;font-weight:600">最热方向</div></div>
+              <div><div style="font-size:26px;font-weight:800">9</div><div style="font-size:12px;opacity:0.85;font-weight:600">你已收藏</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:12px;font-weight:800;letter-spacing:0.06em;color:#A4ACB8;text-transform:uppercase;margin-bottom:14px">本周精选 · 不容错过</div>
+        <div style="display:flex;flex-direction:column;gap:13px;margin-bottom:32px">
+          <sc-for list="{{ reportPicks }}" as="p" hint-placeholder-count="3">
+            <article onClick="{{ p.open }}" style="background:#fff;border:1px solid #EAEDF1;border-radius:14px;padding:17px 19px;cursor:pointer;display:flex;gap:15px;align-items:flex-start" style-hover="border-color:#C9D4EE">
+              <div style="font-family:'Source Serif 4',serif;font-size:22px;font-weight:700;color:#2A5BD7;line-height:1;width:26px;flex-shrink:0">{{ p.no }}</div>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:5px;color:{{ p.sourceColor }};background:{{ p.sourceBg }}">{{ p.source }}</span>
+                  <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:5px;padding:2px 8px">{{ p.topic }}</span>
+                </div>
+                <h3 style="font-family:'Source Serif 4',serif;font-size:16.5px;font-weight:600;line-height:1.35;margin-bottom:5px">{{ p.title }}</h3>
+                <p style="font-size:12.5px;color:#5B6470;line-height:1.55">{{ p.why }}</p>
+              </div>
+            </article>
+          </sc-for>
+        </div>
+
+        <div style="font-size:12px;font-weight:800;letter-spacing:0.06em;color:#A4ACB8;text-transform:uppercase;margin-bottom:14px">分方向小结</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ reportSections }}" as="s" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #EAEDF1;border-radius:14px;padding:18px 20px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+                <span style="width:9px;height:9px;border-radius:3px;background:{{ s.color }}"></span>
+                <span style="font-size:15px;font-weight:800">{{ s.name }}</span>
+                <span style="font-size:12px;color:#A4ACB8;font-weight:600">{{ s.count }} 篇</span>
+              </div>
+              <p style="font-size:13.5px;color:#475059;line-height:1.65">{{ s.text }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <!-- ========== LIBRARY ========== -->
+      <sc-if value="{{ isLibrary }}" hint-placeholder-val="">
+      <section style="max-width:900px;margin:0 auto;padding:30px 34px 60px">
+        <h1 style="font-size:25px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px">收藏与笔记</h1>
+        <p style="font-size:13.5px;color:#5B6470;margin-bottom:20px">你保存的文献，可加标签、写笔记、一键导出 BibTeX。</p>
+        <div style="display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap">
+          <sc-for list="{{ libFilters }}" as="f" hint-placeholder-count="4">
+            <span onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }} <span style="opacity:0.6;font-weight:600">{{ f.count }}</span></span>
+          </sc-for>
+        </div>
+        <sc-if value="{{ libEmpty }}" hint-placeholder-val="">
+          <div style="text-align:center;padding:50px 20px;color:#A4ACB8;font-size:13.5px">该筛选下暂无文献。</div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <sc-for list="{{ library }}" as="p" hint-placeholder-count="4">
+            <article onClick="{{ p.open }}" style="background:#fff;border:1px solid #EAEDF1;border-radius:14px;padding:18px 20px;cursor:pointer" style-hover="border-color:#C9D4EE">
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:5px;color:{{ p.sourceColor }};background:{{ p.sourceBg }}">{{ p.source }}</span>
+                <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:5px;padding:2px 8px">{{ p.topic }}</span>
+                <sc-if value="{{ p.read }}" hint-placeholder-val="">
+                  <span style="font-size:11px;font-weight:700;color:#1F8A5B;background:#E5F3EC;border-radius:5px;padding:2px 8px">✓ 已读</span>
+                </sc-if>
+                <div style="flex:1"></div>
+                <a href="{{ p.url }}" target="_blank" rel="noopener" onClick="{{ p.stopProp }}" style="font-size:11.5px;font-weight:700;color:#2A5BD7;text-decoration:none" style-hover="text-decoration:underline">↗ 原文</a>
+                <span style="font-size:11.5px;font-weight:700;color:#C9970A;background:#FBF3DC;border-radius:5px;padding:2px 8px">★ 已收藏</span>
+              </div>
+              <h3 style="font-family:'Source Serif 4',serif;font-size:17px;font-weight:600;line-height:1.35;margin-bottom:8px">{{ p.title }}</h3>
+              <sc-if value="{{ p.note }}" hint-placeholder-val="">
+                <div style="background:#FFFBEF;border:1px solid #F2E6BF;border-left:3px solid #E6B800;border-radius:0 8px 8px 0;padding:10px 13px;font-size:12.5px;color:#6B5A1E;line-height:1.55">📝 {{ p.note }}</div>
+              </sc-if>
+            </article>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <!-- ========== SETTINGS ========== -->
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="">
+      <section style="max-width:760px;margin:0 auto;padding:30px 34px 60px">
+        <h1 style="font-size:25px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px">订阅与刷新设置</h1>
+        <p style="font-size:13.5px;color:#5B6470;margin-bottom:26px">设置追踪关键词、领域、内容来源、自动刷新时间与推送渠道。修改后点<b>“保存并拓取”</b>生效。</p>
+
+        <!-- keywords -->
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:18px">
+          <div style="font-size:15px;font-weight:800;margin-bottom:4px">追踪关键词</div>
+          <div style="font-size:12.5px;color:#8A929E;margin-bottom:16px">最多 3 个，建议用英文（各来源召回率更高）。每次刷新会围绕它们检索全部来源。</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ kwFields }}" as="k" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:12px;background:#F7F9FB;border:1px solid #E4E8ED;border-radius:11px;padding:9px 12px 9px 15px">
+                <span style="width:24px;height:24px;border-radius:7px;background:{{ k.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">{{ k.no }}</span>
+                <input value="{{ k.term }}" onInput="{{ k.onInput }}" placeholder="输入关键词，如：code translation" style="flex:1;height:34px;border:1px solid #E4E8ED;border-radius:8px;background:#fff;padding:0 12px;font-size:14px;font-weight:600;font-family:inherit;color:#16181D;outline:none">
+                <sc-if value="{{ k.matches }}" hint-placeholder-val="">
+                  <span style="font-size:11.5px;color:#8A929E;font-weight:600;flex-shrink:0">{{ k.matches }} 篇</span>
+                </sc-if>
+                <span onClick="{{ k.remove }}" style="font-size:16px;color:#C1C8D1;cursor:pointer;flex-shrink:0;padding:0 4px" style-hover="color:#E0556B">✕</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ canAddKw }}" hint-placeholder-val="{{ true }}">
+            <div onClick="{{ addKw }}" style="margin-top:11px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#2A5BD7;cursor:pointer;padding:7px 13px;border:1px dashed #B9CDF0;border-radius:9px" style-hover="background:#F3F7FF">+ 添加关键词</div>
+          </sc-if>
+        </div>
+
+        <!-- domain -->
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:18px">
+          <div style="font-size:15px;font-weight:800;margin-bottom:4px">热点分析领域</div>
+          <div style="font-size:12.5px;color:#8A929E;margin-bottom:16px">设定一个宽泛的领域，帮助 LLM 更好地扩写关键词和筛选文献。留空则不限领域。</div>
+          <input value="{{ formDomain }}" onInput="{{ setFormDomain }}" placeholder="例如：天然产物化学 / 人工智能 / 细胞生物学" style="width:100%;height:40px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 14px;font-size:14px;font-weight:600;font-family:inherit;color:#16181D;outline:none">
+        </div>
+
+        <!-- sources -->
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:18px">
+          <div style="font-size:15px;font-weight:800;margin-bottom:16px">内容来源</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+            <sc-for list="{{ sources }}" as="s" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:11px;border:1px solid #E4E8ED;border-radius:11px;padding:12px 14px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;color:{{ s.color }};background:{{ s.bg }}">{{ s.name }}</span>
+                <span style="flex:1;font-size:12px;color:#8A929E;font-weight:500">{{ s.desc }}</span>
+                <span onClick="{{ s.onToggle }}" style="{{ s.toggle }}"><span style="{{ s.knob }}"></span></span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- refresh -->
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:18px">
+          <div style="font-size:15px;font-weight:800;margin-bottom:4px">自动刷新时间</div>
+          <div style="font-size:12.5px;color:#8A929E;margin-bottom:16px">每天刷新两次（本地时区 GMT+8）。默认上午 10:00。</div>
+          <div style="display:flex;gap:12px">
+            <div style="flex:1;border:1px solid #E4E8ED;border-radius:11px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:11.5px;color:#8A929E;font-weight:600;margin-bottom:2px">早间刷新</div><div style="font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace">10:00</div></div>
+              <span style="font-size:18px;color:#C1C8D1">🕙</span>
+            </div>
+            <div style="flex:1;border:1px solid #E4E8ED;border-radius:11px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:11.5px;color:#8A929E;font-weight:600;margin-bottom:2px">晚间刷新</div><div style="font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace">22:00</div></div>
+              <span style="font-size:18px;color:#C1C8D1">🕙</span>
+            </div>
+          </div>
+          <div style="height:1px;background:#EAEDF1;margin:18px 0"></div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="flex:1">
+              <div style="font-size:13.5px;font-weight:700;margin-bottom:2px">无新内容时回填最新 N 篇</div>
+              <div style="font-size:12px;color:#8A929E;line-height:1.5">某个关键词当天没有新发表时，自动拉取该方向最新的几篇，避免空列表。</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0;border:1px solid #E4E8ED;border-radius:10px;overflow:hidden;flex-shrink:0">
+              <span onClick="{{ decBackfill }}" style="width:38px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#5B6470;cursor:pointer;background:#F7F9FB" style-hover="background:#EEF1F5">−</span>
+              <span style="width:46px;text-align:center;font-size:17px;font-weight:800;font-family:'JetBrains Mono',monospace">{{ backfillN }}</span>
+              <span onClick="{{ incBackfill }}" style="width:38px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#5B6470;cursor:pointer;background:#F7F9FB" style-hover="background:#EEF1F5">+</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- push -->
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px">
+          <div style="font-size:15px;font-weight:800;margin-bottom:16px">推送渠道</div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ channels }}" as="c" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:12px;border:1px solid #E4E8ED;border-radius:11px;padding:12px 15px">
+                <span style="font-size:16px">{{ c.icon }}</span>
+                <div style="flex:1"><div style="font-size:13.5px;font-weight:700">{{ c.name }}</div><div style="font-size:11.5px;color:#8A929E">{{ c.detail }}</div></div>
+                <span onClick="{{ c.onToggle }}" style="{{ c.toggle }}"><span style="{{ c.knob }}"></span></span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ emailOn }}" hint-placeholder-val="">
+            <input value="{{ formEmail }}" onInput="{{ setFormEmail }}" placeholder="接收摘要的邮箱地址" style="width:100%;height:38px;margin-top:11px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 13px;font-size:13.5px;font-family:inherit;color:#16181D;outline:none">
+          </sc-if>
+        </div>
+
+        <!-- save bar -->
+        <div style="position:sticky;bottom:0;margin-top:22px;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EAEDF1;border-radius:14px;padding:14px 18px;box-shadow:0 8px 24px -12px rgba(0,0,0,0.18)">
+          <sc-if value="{{ saveMsg }}" hint-placeholder-val="">
+            <span style="font-size:13px;font-weight:700;color:#1F8A5B">{{ saveMsg }}</span>
+          </sc-if>
+          <div style="flex:1"></div>
+          <button onClick="{{ saveOnly }}" style="height:42px;background:#F1F4F8;color:#16181D;border:none;border-radius:11px;font-size:13.5px;font-weight:700;font-family:inherit;padding:0 18px;cursor:pointer" style-hover="background:#E7EBF1">仅保存</button>
+          <button onClick="{{ saveAndRefresh }}" style="height:42px;display:flex;align-items:center;gap:8px;background:#2A5BD7;color:#fff;border:none;border-radius:11px;font-size:13.5px;font-weight:700;font-family:inherit;padding:0 20px;cursor:pointer" style-hover="background:#1E48B5">
+            <sc-if value="{{ loading }}" hint-placeholder-val=""><span>拓取中…</span></sc-if>
+            <sc-if value="{{ notLoading }}" hint-placeholder-val="{{ true }}"><span>保存并拓取</span></sc-if>
+          </button>
+        </div>
+      </section>
+      </sc-if>
+
+      <!-- ========== DEEP SEARCH ========== -->
+      <sc-if value="{{ isDeepSearch }}" hint-placeholder-val="">
+      <section style="max-width:900px;margin:0 auto;padding:30px 34px 60px">
+        <h1 style="font-size:25px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px">深度搜索</h1>
+        <p style="font-size:13.5px;color:#5B6470;margin-bottom:24px">多关键词 AND 组合 + 可配置时间范围，做更精确的文献回溯。每个关键词会<strong>自动扩写</strong>后与其他关键词取 AND 交集。</p>
+
+        <!-- search form -->
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:16px">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px">搜索关键词（最多 3 个，用 AND 组合）</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+            <sc-for list="{{ dsKwFields }}" as="kw" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="width:22px;height:22px;border-radius:6px;background:{{ kw.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">{{ kw.no }}</span>
+                <input value="{{ kw.term }}" onInput="{{ kw.onInput }}" placeholder="{{ kw.placeholder }}" style="flex:1;height:40px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 13px;font-size:13.5px;font-family:inherit;color:#16181D;outline:none">
+                <sc-if value="{{ kw.canRemove }}" hint-placeholder-val="">
+                  <span onClick="{{ kw.remove }}" style="font-size:16px;color:#A4ACB8;cursor:pointer;padding:4px" style-hover="color:#D42A14">✕</span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ dsCanAddKw }}" hint-placeholder-val="">
+            <button onClick="{{ dsAddKw }}" style="height:36px;background:#F1F4F8;border:1px dashed #C9D4EE;border-radius:10px;font-size:12.5px;font-weight:700;color:#5B6470;font-family:inherit;padding:0 16px;cursor:pointer;width:100%" style-hover="background:#E7EBF1">+ 添加关键词</button>
+          </sc-if>
+
+          <div style="height:1px;background:#EAEDF1;margin:18px 0"></div>
+
+          <div style="display:flex;gap:20px;flex-wrap:wrap">
+            <div style="flex:1;min-width:160px">
+              <div style="font-size:12.5px;font-weight:700;color:#5B6470;margin-bottom:8px">时间范围</div>
+              <div style="display:flex;background:#EEF1F5;border-radius:10px;padding:3px;flex-wrap:wrap">
+                <sc-for list="{{ dsTimeOptions }}" as="t" hint-placeholder-count="4">
+                  <span onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="flex:2;min-width:200px">
+              <div style="font-size:12.5px;font-weight:700;color:#5B6470;margin-bottom:8px">检索来源 <a onClick="{{ goSettings }}" style="font-weight:400;color:#2A5BD7;cursor:pointer;text-decoration:none">（在订阅设置中管理）</a></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <sc-for list="{{ dsSources }}" as="s" hint-placeholder-count="6">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;color:{{ s.color }};background:{{ s.bg }};cursor:pointer;opacity:{{ s.opacity }};transition:opacity .15s" onClick="{{ s.onToggle }}">{{ s.name }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button onClick="{{ dsSearch }}" style="height:44px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(120deg,#2A5BD7,#3F6FE5);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;padding:0 22px;cursor:pointer;margin-bottom:16px" style-hover="background:#1E48B5">
+          <sc-if value="{{ dsSearching }}" hint-placeholder-val="">
+            <span style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;display:inline-block;animation:fadeIn .7s ease infinite alternate"></span>
+            搜索中…（约 1-3 分钟）
+          </sc-if>
+          <sc-if value="{{ dsNotSearching }}" hint-placeholder-val="{{ true }}">
+            🔍 开始深度搜索
+          </sc-if>
+        </button>
+
+        <sc-if value="{{ dsHasSearched }}" hint-placeholder-val="">
+          <div style="font-size:13px;color:#5B6470;margin-bottom:16px;font-weight:600">共找到 <b style="color:#2A5BD7;font-size:18px">{{ dsTotal }}</b> 篇相关论文</div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <sc-for list="{{ dsResults }}" as="p" hint-placeholder-count="5">
+              <article onClick="{{ p.open }}" style="background:#fff;border:1px solid #EAEDF1;border-radius:14px;padding:19px 21px;cursor:pointer;transition:border-color .15s,box-shadow .15s" style-hover="border-color:#C9D4EE;box-shadow:0 6px 22px -10px rgba(42,91,215,0.22)">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;color:{{ p.sourceColor }};background:{{ p.sourceBg }}">{{ p.source }}</span>
+                  <span style="font-size:12px;color:#A4ACB8;font-weight:600">{{ p.publishedAgo }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#2A5BD7;font-weight:600">{{ p.published }}</span>
+                  <div style="flex:1"></div>
+                  <sc-if value="{{ p.topic }}" hint-placeholder-val="">
+                    <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px;margin-right:6px">{{ p.topic }}</span>
+                  </sc-if>
+                  <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px">{{ p.venue }}</span>
+                </div>
+                <h3 style="font-family:'Source Serif 4',serif;font-size:18.5px;font-weight:600;line-height:1.32;letter-spacing:-0.2px;margin-bottom:7px;text-wrap:pretty">{{ p.title }}</h3>
+                <div style="font-size:12.5px;color:#8A929E;font-weight:500;margin-bottom:10px">{{ p.authorsStr }}</div>
+                <p style="font-size:13.5px;color:#475059;line-height:1.62;text-wrap:pretty">{{ p.abstract }}</p>
+                <sc-if value="{{ p.tldr }}" hint-placeholder-val="">
+                  <div style="display:flex;align-items:center;gap:7px;margin-top:14px">
+                    <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#2A5BD7;background:#EAF0FD;border-radius:7px;padding:5px 10px">✦ AI 摘要</span>
+                    <div style="flex:1"></div>
+                    <a href="{{ p.url }}" target="_blank" rel="noopener" style="font-size:12px;font-weight:700;color:#2A5BD7;padding:5px 11px;border-radius:7px;border:1px solid #C9D9F5;background:#F3F7FF;text-decoration:none;display:inline-flex;align-items:center;gap:4px" style-hover="background:#E6EEFD;border-color:#A9C2EF">↗ 访问原文</a>
+                  </div>
+                  <p style="font-size:13.5px;color:#475059;line-height:1.62;margin-top:10px;margin-bottom:0">{{ p.tldr }}</p>
+                </sc-if>
+              </article>
+            </sc-for>
+          </div>
+        </sc-if>
+      </section>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- ===== DEEP SEARCH DETAIL SLIDE-OVER ===== -->
+  <sc-if value="{{ dsDetailOpen }}" hint-placeholder-val="">
+  <div style="position:fixed;inset:0;z-index:50">
+    <div onClick="{{ dsCloseDetail }}" style="position:absolute;inset:0;background:rgba(20,24,33,0.42);animation:fadeIn .2s ease"></div>
+    <div style="position:absolute;top:0;right:0;height:100vh;width:560px;max-width:92vw;background:#fff;box-shadow:-20px 0 60px -20px rgba(0,0,0,0.3);animation:slideOver .28s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column">
+      <div style="flex-shrink:0;padding:18px 26px;border-bottom:1px solid #EAEDF1;display:flex;align-items:center;gap:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;color:{{ dsSelected.sourceColor }};background:{{ dsSelected.sourceBg }}">{{ dsSelected.source }}</span>
+        <span style="font-size:12px;color:#A4ACB8;font-weight:600">{{ dsSelected.publishedAgo }}</span>
+        <div style="flex:1"></div>
+        <span onClick="{{ dsCloseDetail }}" style="font-size:20px;color:#A4ACB8;cursor:pointer;line-height:1" style-hover="color:#16181D">✕</span>
+      </div>
+
+      <div style="flex:1;overflow-y:auto;padding:26px 28px 40px">
+        <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px">{{ dsSelected.venue }}</span>
+        <h2 style="font-family:'Source Serif 4',serif;font-size:23px;font-weight:600;line-height:1.3;letter-spacing:-0.3px;margin:13px 0 9px;text-wrap:pretty">{{ dsSelected.title }}</h2>
+        <div style="font-size:13px;color:#8A929E;font-weight:500;margin-bottom:22px">{{ dsSelected.authorsStr }}</div>
+
+        <sc-if value="{{ dsSelected.tldr }}" hint-placeholder-val="">
+        <div style="background:linear-gradient(135deg,#EEF3FE,#F3F0FD);border:1px solid #DCE6FA;border-radius:14px;padding:18px 20px;margin-bottom:24px">
+          <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:#2A5BD7;margin-bottom:11px">✦ AI 摘要</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:5px">一句话 TL;DR</div>
+          <p style="font-size:14px;color:#2A3340;line-height:1.6;margin-bottom:16px">{{ dsSelected.tldr }}</p>
+          <sc-if value="{{ dsSelected.method }}" hint-placeholder-val="">
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:5px">方法</div>
+          <p style="font-size:13.5px;color:#475059;line-height:1.62;margin-bottom:16px">{{ dsSelected.method }}</p>
+          </sc-if>
+          <sc-if value="{{ dsSelected.contributions.length }}" hint-placeholder-val="">
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:8px">核心贡献</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ dsSelected.contributions }}" as="c" hint-placeholder-count="3">
+              <div style="display:flex;gap:9px;align-items:flex-start">
+                <span style="color:#2A5BD7;font-weight:800;font-size:13px;line-height:1.5">›</span>
+                <span style="font-size:13.5px;color:#2A3340;line-height:1.55">{{ c }}</span>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+        </sc-if>
+
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:6px">原始摘要</div>
+        <p style="font-size:13.5px;color:#475059;line-height:1.7;margin-bottom:24px">{{ dsSelected.abstract }}</p>
+
+        <div style="display:flex;gap:10px;margin-top:18px">
+          <a href="{{ dsSelected.url }}" target="_blank" rel="noopener" style="flex:1;height:44px;display:flex;align-items:center;justify-content:center;gap:6px;background:#2A5BD7;color:#fff;border:none;border-radius:11px;font-size:13.5px;font-weight:700;font-family:inherit;text-decoration:none;cursor:pointer" style-hover="background:#1E48B5">↗ 访问原文</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== DETAIL SLIDE-OVER ===== -->
+  <sc-if value="{{ detailOpen }}" hint-placeholder-val="">
+  <div style="position:fixed;inset:0;z-index:50">
+    <div onClick="{{ closePaper }}" style="position:absolute;inset:0;background:rgba(20,24,33,0.42);animation:fadeIn .2s ease"></div>
+    <div style="position:absolute;top:0;right:0;height:100vh;width:560px;max-width:92vw;background:#fff;box-shadow:-20px 0 60px -20px rgba(0,0,0,0.3);animation:slideOver .28s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column">
+      <div style="flex-shrink:0;padding:18px 26px;border-bottom:1px solid #EAEDF1;display:flex;align-items:center;gap:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;color:{{ paper.sourceColor }};background:{{ paper.sourceBg }}">{{ paper.source }}</span>
+        <span style="font-size:12px;color:#A4ACB8;font-weight:600">{{ paper.ago }}</span>
+        <div style="flex:1"></div>
+        <span onClick="{{ closePaper }}" style="font-size:20px;color:#A4ACB8;cursor:pointer;line-height:1" style-hover="color:#16181D">✕</span>
+      </div>
+
+      <div style="flex:1;overflow-y:auto;padding:26px 28px 40px">
+        <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px">{{ paper.topic }}</span>
+        <h2 style="font-family:'Source Serif 4',serif;font-size:23px;font-weight:600;line-height:1.3;letter-spacing:-0.3px;margin:13px 0 9px;text-wrap:pretty">{{ paper.title }}</h2>
+        <div style="font-size:13px;color:#8A929E;font-weight:500;margin-bottom:22px">{{ paper.authors }} · {{ paper.venue }}</div>
+
+        <div style="background:linear-gradient(135deg,#EEF3FE,#F3F0FD);border:1px solid #DCE6FA;border-radius:14px;padding:18px 20px;margin-bottom:24px">
+          <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:#2A5BD7;margin-bottom:11px">✦ AI 摘要</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:5px">一句话 TL;DR</div>
+          <p style="font-size:14px;color:#2A3340;line-height:1.6;margin-bottom:16px">{{ paper.tldr }}</p>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:5px">方法</div>
+          <p style="font-size:13.5px;color:#475059;line-height:1.62;margin-bottom:16px">{{ paper.method }}</p>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:8px">核心贡献</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ paper.contributions }}" as="c" hint-placeholder-count="3">
+              <div style="display:flex;gap:9px;align-items:flex-start">
+                <span style="color:#2A5BD7;font-weight:800;font-size:13px;line-height:1.5">›</span>
+                <span style="font-size:13.5px;color:#2A3340;line-height:1.55">{{ c }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:6px">原始摘要</div>
+        <p style="font-size:13.5px;color:#475059;line-height:1.7;margin-bottom:24px">{{ paper.abstract }}</p>
+
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:11px">相关文献</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:24px">
+          <sc-for list="{{ paper.related }}" as="r" hint-placeholder-count="2">
+            <div style="border:1px solid #EAEDF1;border-radius:11px;padding:12px 14px" style-hover="border-color:#C9D4EE">
+              <div style="font-family:'Source Serif 4',serif;font-size:14px;font-weight:600;line-height:1.35;margin-bottom:3px">{{ r.title }}</div>
+              <div style="font-size:11.5px;color:#A4ACB8;font-weight:500">{{ r.meta }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:8px">我的笔记</div>
+        <textarea value="{{ paper.noteVal }}" onInput="{{ paper.setNote }}" onBlur="{{ paper.saveNote }}" placeholder="记录想法、待办、与其它工作的关联…（失焦自动保存）" style="width:100%;min-height:84px;border:1px solid #E4E8ED;border-radius:11px;background:#F7F9FB;padding:12px 14px;font-size:13.5px;font-family:inherit;color:#16181D;line-height:1.6;resize:vertical;outline:none"></textarea>
+      </div>
+
+      <div style="flex-shrink:0;padding:14px 26px;border-top:1px solid #EAEDF1;display:flex;gap:10px;align-items:center">
+        <sc-if value="{{ paper.bibMsg }}" hint-placeholder-val="">
+          <span style="font-size:12px;font-weight:700;color:#1F8A5B;white-space:nowrap">{{ paper.bibMsg }}</span>
+        </sc-if>
+        <button onClick="{{ paper.toggleSaveDetail }}" style="flex:1;height:42px;background:#2A5BD7;color:#fff;border:none;border-radius:11px;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer" style-hover="background:#1E48B5">{{ paper.saveLabel }}</button>
+        <button onClick="{{ paper.copyBibtex }}" style="height:42px;background:#F1F4F8;color:#16181D;border:none;border-radius:11px;font-size:13px;font-weight:700;font-family:inherit;padding:0 16px;cursor:pointer" style-hover="background:#E7EBF1">⧉ BibTeX</button>
+<a href="{{ paper.url }}" target="_blank" rel="noopener" style="height:42px;display:flex;align-items:center;background:#2A5BD7;color:#fff;border-radius:11px;font-size:13px;font-weight:700;padding:0 16px;cursor:pointer;text-decoration:none" style-hover="background:#1E48B5">↗ 访问原文</a>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== TREND DIRECTION SLIDE-OVER ===== -->
+  <sc-if value="{{ trendOpen }}" hint-placeholder-val="">
+  <div style="position:fixed;inset:0;z-index:50">
+    <div onClick="{{ closeTrend }}" style="position:absolute;inset:0;background:rgba(20,24,33,0.42);animation:fadeIn .2s ease"></div>
+    <div style="position:absolute;top:0;right:0;height:100vh;width:520px;max-width:92vw;background:#fff;box-shadow:-20px 0 60px -20px rgba(0,0,0,0.3);animation:slideOver .28s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column">
+      <div style="flex-shrink:0;padding:18px 26px;border-bottom:1px solid #EAEDF1;display:flex;align-items:center;gap:10px">
+        <span style="font-size:12.5px;font-weight:800;color:#2A5BD7;background:#EAF0FD;border-radius:6px;padding:3px 10px">🔥 方向总结</span>
+        <div style="flex:1"></div>
+        <span onClick="{{ closeTrend }}" style="font-size:20px;color:#A4ACB8;cursor:pointer;line-height:1" style-hover="color:#16181D">✕</span>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:24px 28px 40px">
+        <h2 style="font-family:'Source Serif 4',serif;font-size:24px;font-weight:600;letter-spacing:-0.3px;margin-bottom:4px">{{ trend.name }}</h2>
+        <div style="font-size:12.5px;color:#A4ACB8;font-weight:600;margin-bottom:18px">{{ trend.en }}</div>
+        <div style="display:flex;gap:10px;margin-bottom:22px">
+          <div style="flex:1;background:#F4F6F9;border-radius:11px;padding:12px 14px">
+            <div style="font-size:24px;font-weight:800;color:#2A5BD7;letter-spacing:-0.5px">+{{ trend.delta }}</div>
+            <div style="font-size:11.5px;color:#5B6470;font-weight:600">篇 / 窗口期</div>
+          </div>
+          <div style="flex:1;background:#F4F6F9;border-radius:11px;padding:12px 14px">
+            <div style="font-size:24px;font-weight:800;color:#1F8A5B;letter-spacing:-0.5px">↑{{ trend.growth }}%</div>
+            <div style="font-size:11.5px;color:#5B6470;font-weight:600">环比增长</div>
+          </div>
+        </div>
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:8px">AI 方向总结</div>
+        <p style="font-size:14px;color:#2A3340;line-height:1.65;margin-bottom:24px">{{ trend.summary }}</p>
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:11px">该方向论文 · {{ trend.count }} 篇</div>
+        <sc-if value="{{ trend.empty }}" hint-placeholder-val="">
+          <div style="font-size:13px;color:#A4ACB8;padding:8px 0">暂无可展示的论文清单。</div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ trend.papers }}" as="r" hint-placeholder-count="3">
+            <a href="{{ r.url }}" target="_blank" rel="noopener" style="border:1px solid #EAEDF1;border-radius:11px;padding:12px 14px;text-decoration:none;display:block" style-hover="border-color:#C9D4EE">
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:5px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:5px;color:{{ r.sourceColor }};background:{{ r.sourceBg }}">{{ r.source }}</span>
+                <span style="font-size:11px;font-weight:700;color:#2A5BD7">{{ r.published }}</span>
+                <span style="font-size:11px;color:#A4ACB8;font-weight:500">{{ r.venue }}</span>
+              </div>
+              <div style="font-family:'Source Serif 4',serif;font-size:14px;font-weight:600;line-height:1.35;color:#16181D">{{ r.title }}</div>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  state = { screen: 'feed', feedTopic: 'all', selectedId: null, saved: { p1:true, p4:true },
+    domain: '', trendWindow: 7, libFilter: 'all', backfillN: 5,
+    remote: null, loading: false, form: null, saveMsg: '', trendSel: null,
+    query: '', noteDraft: '', bibMsg: '', feedSort: 'new', feedRead: 'all', showIgnored: false };
+
+  // ===== Backend integration =====
+  // Served by the backend → same-origin '/api'. Opened as a file:// design → null → demo data.
+  api() { return (location.protocol === 'file:') ? null : '/api'; }
+
+  defaultForm() {
+    return {
+      keywords: [],
+      domain: '',
+      sources: { 'arXiv': true, 'Crossref': true, 'Google Scholar': true, 'GitHub': true, '学术新闻': true, 'Nature': true, 'ACS': true, 'PubMed': true },
+      channels: { email: false, browser: true },
+      email: '', backfillN: 5,
+    };
+  }
+
+  formFromData(data) {
+    const srcMap = {};
+    (data.sources || []).forEach(s => { srcMap[s.name] = !!s.on; });
+    return {
+      keywords: (data.keywords || []).map(k => k.term),
+      domain: data.domain || '',
+      sources: Object.keys(srcMap).length ? srcMap : this.defaultForm().sources,
+      channels: data.channels && Object.keys(data.channels).length ? { ...data.channels } : { email: false, browser: true },
+      email: data.email || '', backfillN: data.backfillN || 5,
+    };
+  }
+
+  setForm(patch) { this.setState(st => ({ form: { ...st.form, ...patch }, saveMsg: '' })); }
+
+  async componentDidMount() {
+    try { const t = localStorage.getItem('ap_theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    this.setState({ form: this.defaultForm() });   // editable even without backend
+    const base = this.api();
+    if (!base) return;                       // standalone design preview → keep demo data
+    try {
+      const r = await fetch(base + '/bootstrap');
+      if (!r.ok) throw new Error('bootstrap ' + r.status);
+      const data = await r.json();
+      this.setState({ remote: data, form: this.formFromData(data),
+        domain: data.domain || this.state.domain, backfillN: data.backfillN || this.state.backfillN });
+      // Trends are precomputed by the scheduler and arrive cached in `data`
+      // (trendBars/top3) — render them instantly. Only recompute if there is
+      // no cached snapshot yet, or when the user changes domain/window.
+      if (data.domain && !(data.top3 && data.top3.length)) this.apiTrends(data.domain, this.state.trendWindow);
+      this.maybeNotify(data);
+    } catch (e) {
+      console.warn('[ScholarPulse] backend not reachable, showing demo data:', e.message);
+    }
+  }
+
+  async saveSettings(thenRefresh) {
+    const base = this.api();
+    const f = this.state.form || this.defaultForm();
+    const payload = {
+      keywords: f.keywords.map(s => s.trim()).filter(Boolean).slice(0, 3),
+      domain: f.domain, sources: f.sources, channels: f.channels,
+      email: f.email, backfill_n: f.backfillN,
+    };
+    if (!base) { this.setState({ saveMsg: '已保存（演示模式，未连后端）' }); return; }
+    await fetch(base + '/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    this.setState({ saveMsg: '✓ 已保存' });
+    await this.reloadBootstrap();
+    if (thenRefresh) { await this.apiRefresh(); }   // background refresh + polling (manages loading)
+    if (payload.domain) this.apiTrends(payload.domain, this.state.trendWindow);
+  }
+
+  // 浏览器通知：有今日新文献且用户开启了通知时弹出（每天只弹一次）
+  maybeNotify(data) {
+    try {
+      if (!data || !data.channels || !data.channels.browser) return;
+      if (!('Notification' in window) || !data.todayCount) return;
+      const today = new Date().toDateString();
+      if (localStorage.getItem('sp_notified') === today) return;
+      const fire = () => {
+        new Notification('ScholarPulse · 今日文献', { body: `为你的关键词找到 ${data.todayCount} 篇新内容` });
+        localStorage.setItem('sp_notified', today);
+      };
+      if (Notification.permission === 'granted') fire();
+      else if (Notification.permission !== 'denied') Notification.requestPermission().then(p => { if (p === 'granted') fire(); });
+    } catch (e) { /* ignore */ }
+  }
+
+  async reloadBootstrap() {
+    const base = this.api(); if (!base) return;
+    try { const r = await fetch(base + '/bootstrap'); if (r.ok) this.setState({ remote: await r.json() }); }
+    catch (e) { /* ignore */ }
+  }
+
+  async apiSave(paperId, fields) {
+    const base = this.api(); if (!base) return;
+    try {
+      await fetch(base + '/library/' + paperId, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields),
+      });
+      this.reloadBootstrap();
+    } catch (e) { /* ignore */ }
+  }
+
+  async apiTrends(domain, window) {
+    const base = this.api(); if (!base) return;
+    this.setState({ loading: true });
+    try {
+      const r = await fetch(base + '/trends?domain=' + encodeURIComponent(domain || '') + '&window=' + window);
+      if (r.ok) {
+        const t = await r.json();
+        // Don't let an empty/failed recompute wipe good cached trends (that's
+        // what made "查看方向总结" show no papers).
+        this.setState(st => ({ remote: { ...(st.remote || {}),
+          trendBars: (t.bars && t.bars.length) ? t.bars : ((st.remote && st.remote.trendBars) || []),
+          top3: (t.top3 && t.top3.length) ? t.top3 : ((st.remote && st.remote.top3) || []) }, loading: false }));
+      } else this.setState({ loading: false });
+    } catch (e) { this.setState({ loading: false }); }
+  }
+
+  async apiRefresh() {
+    const base = this.api(); if (!base) return;
+    this.setState({ loading: true });
+    try {
+      await fetch(base + '/refresh', { method: 'POST' });   // returns immediately
+      // The refresh runs in the background (smart fetch can take minutes).
+      // Poll bootstrap until the backend reports it finished; the feed fills in live.
+      for (let i = 0; i < 160; i++) {                        // up to ~8 min
+        await new Promise(r => setTimeout(r, 3000));
+        try {
+          const r = await fetch(base + '/bootstrap');
+          if (r.ok) {
+            const d = await r.json();
+            this.setState({ remote: d });
+            if (!d.refreshing) break;
+          }
+        } catch (e) { /* transient; keep polling */ }
+      }
+    } finally { this.setState({ loading: false }); }
+  }
+
+  copyBibtex(p) {
+    const first = (p.authors || '').split(',')[0].trim().replace(/[^A-Za-z]/g, '') || 'ref';
+    const year = (p.date || '').slice(0, 4);
+    const authors = (p.authors || '').replace(/, et al\.$/, '').split(',').map(s => s.trim()).filter(Boolean).join(' and ');
+    const bib = '@article{' + first + year + ',\n' +
+      '  title   = {' + (p.title || '') + '},\n' +
+      '  author  = {' + authors + '},\n' +
+      (year ? '  year    = {' + year + '},\n' : '') +
+      '  journal = {' + (p.venue || p.source || '') + '},\n' +
+      '  url     = {' + (p.url || '') + '}\n}';
+    const done = () => { this.setState({ bibMsg: '✓ 已复制 BibTeX' }); setTimeout(() => this.setState({ bibMsg: '' }), 2200); };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(bib).then(done, () => this.fallbackCopy(bib, done));
+      else this.fallbackCopy(bib, done);
+    } catch (e) { this.fallbackCopy(bib, done); }
+  }
+  fallbackCopy(text, done) {
+    try {
+      const ta = document.createElement('textarea'); ta.value = text;
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      done();
+    } catch (e) { this.setState({ bibMsg: '复制失败，请手动复制' }); }
+  }
+
+  papers() {
+    const SRC = {
+      arxiv:   { source:'arXiv',          color:'#B31B1B', bg:'#FBEAEA' },
+      scholar: { source:'Google Scholar', color:'#1A73E8', bg:'#E8F0FE' },
+      ieee:    { source:'IEEE',           color:'#00629B', bg:'#E1EEF6' },
+      acm:     { source:'ACM',            color:'#0F6FB5', bg:'#E3F0F8' },
+      news:    { source:'学术新闻',        color:'#7C4DD9', bg:'#F0EAFB' },
+    };
+    const mk = (id, s, o) => Object.assign({ id }, SRC[s], { sourceColor: SRC[s].color, sourceBg: SRC[s].bg }, o);
+    const arr = [
+      mk('p1','arxiv',{ topic:'C2Rust', ago:'2 小时前', venue:'arXiv:2506.14021',
+        title:'C2SafeRust: Idiomatic and Memory-Safe C-to-Rust Translation with LLM-Guided Refinement',
+        authors:'W. Zhang, A. Kumar, S. Li, et al.',
+        abstract:'We present a translation pipeline that pairs static ownership inference with iterative LLM refinement to emit idiomatic, compilable Rust from legacy C. On a 1.2M-LOC benchmark the system reduces residual unsafe blocks by 63% over prior transpilers while preserving runtime behavior.',
+        tldr:'用「静态所有权推断 + LLM 多轮修正」把 C 翻译成地道且能编译的 Rust，unsafe 代码块比已有工具少 63%。',
+        method:'先用静态分析推断指针的所有权与生命周期，生成初版 Rust；再让 LLM 在编译器反馈下迭代修正类型与借用错误，直到通过 borrow checker。',
+        contributions:['提出所有权感知的中间表示，显著降低 unsafe 使用','构建 1.2M 行规模的 C2Rust 评测集','开源可复现的迭代修正流水线'],
+        related:[{title:'Type-Directed Migration of C Pointers to Rust References',meta:'arXiv · 2026'},{title:'Bringing Rust to Safety-Critical Systems',meta:'IEEE S&P · 2025'}] }),
+      mk('p2','scholar',{ topic:'代码翻译', ago:'5 小时前', venue:'ACM Computing Surveys',
+        title:'Neural Code Translation at Scale: A Survey of Transpilation Techniques 2020–2026',
+        authors:'M. Rossi, J. Park',
+        abstract:'This survey organizes six years of neural transpilation research into a taxonomy spanning token-level, AST-level, and execution-guided approaches, and identifies fidelity benchmarking as the field\u2019s central open problem.',
+        tldr:'系统梳理 2020–2026 神经代码翻译，提出 token/AST/执行引导三层分类，并指出「翻译保真度评测」是核心未解难题。',
+        method:'对 180+ 篇文献做结构化编码，按表示层级与监督信号归类，并横向对比公开基准上的可编译率与语义一致率。',
+        contributions:['给出统一的神经转译技术分类法','汇总并对齐 12 个公开评测基准','提出保真度评测的标准化协议建议'],
+        related:[{title:'Benchmarking LLMs on Cross-Language Code Translation Fidelity',meta:'arXiv · 2026'}] }),
+      mk('p3','ieee',{ topic:'Skill', ago:'昨天', venue:'IEEE TSE',
+        title:'Repair Skills: Retrieval-Augmented Program Synthesis for Automated Vulnerability Repair',
+        authors:'H. Tanaka, R. Mehta, et al.',
+        abstract:'We frame vulnerability repair as composing reusable repair skills retrieved from a curated CWE-indexed corpus, achieving a 41% higher correct-patch rate than end-to-end synthesis on the VulnBench-2026 suite.',
+        tldr:'把漏洞修复建模为「检索可复用修复技能再组合」，在 VulnBench-2026 上正确补丁率比端到端合成高 41%。',
+        method:'按 CWE 类别建立修复技能库，遇到漏洞先检索相似技能模板，再由合成器在上下文中实例化补丁并经测试验证。',
+        contributions:['提出 CWE 索引的可复用修复技能库','检索增强的补丁合成框架','在多语言漏洞集上验证泛化能力'],
+        related:[{title:'SkillWeaver: Composing Reusable Agent Skills',meta:'ACM · 2026'}] }),
+      mk('p4','acm',{ topic:'Skill', ago:'昨天', venue:'FSE 2026',
+        title:'SkillWeaver: Composing Reusable Agent Skills for Software Engineering Tasks',
+        authors:'D. Okafor, L. Chen',
+        abstract:'SkillWeaver lets a coding agent discover, store, and recombine verified skills across tasks. Cross-task skill reuse cuts token cost by 2.7\u00d7 and improves task success on SWE-bench-Live by 14 points.',
+        tldr:'让编码 Agent 把验证过的「技能」存下来跨任务复用，token 成本降到 1/2.7，SWE-bench-Live 成功率 +14 分。',
+        method:'Agent 完成子任务后将可复用步骤抽象为带前置条件的技能并入库，后续任务先检索技能再编排执行。',
+        contributions:['自动技能发现与抽象机制','带前置条件的技能编排器','在长程软件任务上验证成本与成功率收益'],
+        related:[{title:'Repair Skills: RAG for Vulnerability Repair',meta:'IEEE · 2026'}] }),
+      mk('p5','arxiv',{ topic:'C2Rust', ago:'2 天前', venue:'arXiv:2506.10882',
+        title:'Type-Directed Migration of C Pointers to Rust References',
+        authors:'S. Volkov, P. Nair',
+        abstract:'A type-directed analysis classifies C pointer usages into ownership, borrowing, and raw categories, enabling automatic insertion of Rust references and lifetimes for 78% of pointers without manual annotation.',
+        tldr:'用类型导向分析把 C 指针分为所有权/借用/裸指针三类，78% 的指针可自动转为带生命周期的 Rust 引用。',
+        method:'在数据流图上做指针用途分类，结合别名分析推断生命周期边界，再生成对应的引用与借用注解。',
+        contributions:['指针用途三分类的类型规则','自动生命周期推断算法','与编译器集成的迁移工具原型'],
+        related:[{title:'C2SafeRust: LLM-Guided Refinement',meta:'arXiv · 2026'}] }),
+      mk('p6','news',{ topic:'C2Rust', ago:'2 天前', venue:'DARPA Newsroom',
+        title:'DARPA TRACTOR Program Reports First Milestone in Automated C-to-Rust Conversion',
+        authors:'DARPA I2O',
+        abstract:'The TRACTOR program announced that participating teams converted a 50K-LOC networking stack to memory-safe Rust with zero manual unsafe blocks, signalling growing maturity of automated legacy migration.',
+        tldr:'DARPA TRACTOR 项目公布首个里程碑：参赛团队把 5 万行网络栈零 unsafe 地自动迁移为安全 Rust。',
+        method:'（新闻）报道了项目阶段评测设置与团队成绩，未涉及具体算法细节。',
+        contributions:['自动迁移在真实系统软件上的可行性证据','为后续学界基准提供工业级目标','推动 C2Rust 评测标准化'],
+        related:[{title:'Type-Directed Migration of C Pointers',meta:'arXiv · 2026'}] }),
+      mk('p7','arxiv',{ topic:'代码翻译', ago:'3 天前', venue:'arXiv:2506.09140',
+        title:'Benchmarking LLMs on Cross-Language Code Translation Fidelity',
+        authors:'A. Gupta, Y. Sun, et al.',
+        abstract:'We release FidelityX, a benchmark measuring semantic equivalence of LLM code translations via differential testing across 9 language pairs, revealing that high compile rates often mask subtle behavioral divergence.',
+        tldr:'发布 FidelityX 基准，用差分测试衡量 9 个语言对的翻译语义一致性，发现「能编译」常掩盖细微行为偏差。',
+        method:'对每个翻译样本自动生成测试输入，跨源/目标语言做差分执行，统计行为分歧率作为保真度指标。',
+        contributions:['9 语言对的保真度评测基准','差分测试驱动的语义一致性度量','揭示编译率与正确性的脱节现象'],
+        related:[{title:'Neural Code Translation at Scale: A Survey',meta:'ACM Surveys · 2026'}] }),
+    ];
+    // 是否今日新发（否则为「最新回填」）、是否已读
+    const meta = {
+      p1: { today:true,  read:true  },
+      p2: { today:true,  read:false },
+      p3: { today:false, read:false },
+      p4: { today:false, read:true  },
+      p5: { today:false, read:true  },
+      p6: { today:false, read:false },
+      p7: { today:false, read:false },
+    };
+    // 原型说明：示例数据没有真实 URL，故「访问原文」指向各来源以标题构造的检索页，
+    // 保证落在相关结果上而非某个无关的真实编号。真实产品由后端抓取时回填真实链接。
+    const searchUrl = (src, title) => {
+      const q = encodeURIComponent(title);
+      switch (src) {
+        case 'arXiv':           return 'https://arxiv.org/search/?searchtype=all&query=' + q;
+        case 'Google Scholar':  return 'https://scholar.google.com/scholar?q=' + q;
+        case 'IEEE':            return 'https://ieeexplore.ieee.org/search/searchresult.jsp?queryText=' + q;
+        case 'ACM':             return 'https://dl.acm.org/action/doSearch?AllField=' + q;
+        default:                return 'https://www.google.com/search?q=' + q;
+      }
+    };
+    return arr.map(p => ({ ...p, ...meta[p.id], url: searchUrl(p.source, p.title), isBackfill: !meta[p.id].today }));
+  }
+
+  navStyle(name, active) {
+    const base = 'display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .12s;';
+    return base + (active ? 'background:#EAF0FD;color:#2A5BD7;' : 'color:#5B6470;');
+  }
+  iconStyle(active) {
+    return 'width:18px;text-align:center;font-size:15px;' + (active ? 'opacity:1' : 'opacity:0.7');
+  }
+
+  renderVals() {
+    const S = this.state, set = (screen) => () => this.setState({ screen });
+    const R = S.remote;
+    const all = (R && R.feed) ? R.feed : this.papers();
+    const libBaseSrc = (R && R.library) ? R.library : null;
+    const byId = Object.fromEntries([...all, ...(libBaseSrc || [])].map(p => [p.id, p]));
+
+    const nav = [
+      { key:'feed', label:'今日文献流', icon:'❖', badge:'7' },
+      { key:'trends', label:'领域热点', icon:'⤴', badge:'' },
+      { key:'report', label:'每周报告', icon:'▦', badge:'' },
+      { key:'library', label:'收藏与笔记', icon:'★', badge:'' },
+      { key:'settings', label:'订阅设置', icon:'⚙', badge:'' },
+      { key:'deepsearch', label:'深度搜索', icon:'⌕', badge:'' },
+    ].map(n => ({ ...n, onClick:set(n.key), style:this.navStyle(n.key, S.screen===n.key), iconStyle:this.iconStyle(S.screen===n.key) }));
+
+    // source → badge colors (for remote items lacking explicit color)
+    const SRCMAP = { 'arXiv':['#B31B1B','#FBEAEA'], 'Google Scholar':['#1A73E8','#E8F0FE'], 'IEEE':['#00629B','#E1EEF6'], 'ACM':['#0F6FB5','#E3F0F8'], 'Crossref':['#5B6470','#EEF1F5'], 'GitHub':['#1F2328','#EAECEF'], 'HuggingFace':['#D97706','#FEF3E2'], 'PapersWithCode':['#0EA5A5','#E1F5F5'], '学术新闻':['#7C4DD9','#F0EAFB'], 'PubMed':['#2E8B57','#E8F5EE'] };
+    const colorize = (o) => { const c = SRCMAP[o.source] || SRCMAP['Crossref']; return { sourceColor: o.sourceColor || c[0], sourceBg: o.sourceBg || c[1] }; };
+
+    // feed topic tabs — dynamic from data when remote
+    const topicKeys = R ? Array.from(new Set(all.map(p => p.topic).filter(Boolean)))
+                        : ['代码翻译','C2Rust','Skill'];
+    const tabDefs = [{ key:'all', label:'全部' }, ...topicKeys.map(k => ({ key:k, label:k }))];
+    const tabStyle = (active) => 'border:1px solid ' + (active?'#16181D':'#E4E8ED') + ';background:' + (active?'#16181D':'#fff') + ';color:' + (active?'#fff':'#5B6470') + ';border-radius:9px;padding:7px 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;';
+    const topicTabs = tabDefs.map(t => ({
+      label:t.label,
+      count: t.key==='all' ? all.length : all.filter(p=>p.topic===t.key).length,
+      style: tabStyle(S.feedTopic===t.key),
+      onClick: () => this.setState({ feedTopic: t.key }),
+    }));
+
+    const open = (id) => () => this.setState({ selectedId:id, noteDraft: (byId[id] && byId[id].note) || '', bibMsg: '' });
+    const saveStyle = (on) => 'font-size:12px;font-weight:700;padding:5px 9px;border-radius:7px;cursor:pointer;' + (on ? 'color:#C9970A;background:#FBF3DC;' : 'color:#8A929E;border:1px solid #E4E8ED;');
+
+    const isSaved = (p) => R ? !!p.saved : !!S.saved[p.id];
+    const fbStyle = (active, color) => 'font-size:14px;padding:4px 7px;border-radius:7px;cursor:pointer;line-height:1;' + (active ? ('background:'+color+';') : 'opacity:0.45;filter:grayscale(1);');
+    const setFeedback = (p, val) => (e) => {
+      e.stopPropagation();
+      const next = (p.feedback === val) ? '' : val;   // toggle off if same
+      if (R) this.apiSave(p.id, { feedback: next });
+    };
+    const decorate = (p) => ({
+      ...p, ...colorize(p), open:open(p.id), date: p.date || '',
+      saveIcon: isSaved(p) ? '★' : '☆',
+      saveStyle: saveStyle(isSaved(p)),
+      upStyle: fbStyle(p.feedback==='up', '#E5F3EC'),
+      downStyle: fbStyle(p.feedback==='down', '#FBE9E9'),
+      thumbUp: setFeedback(p, 'up'),
+      thumbDown: setFeedback(p, 'down'),
+      toggleSave: (e) => {
+        e.stopPropagation();
+        if (R) this.apiSave(p.id, { saved: !p.saved });
+        else this.setState(st => ({ saved: { ...st.saved, [p.id]: !st.saved[p.id] } }));
+      },
+      stopProp: (e) => { e.stopPropagation(); },
+    });
+
+    const q = (S.query || '').trim().toLowerCase();
+    const matchQ = (p) => !q || ((p.title||'') + ' ' + (p.authors||'') + ' ' + (p.topic||'')).toLowerCase().includes(q);
+    // read/unread filter + hide 👎'd (unless showing ignored) + sort
+    const readOk = (p) => S.feedRead==='unread' ? !p.read : (S.feedRead==='read' ? !!p.read : true);
+    const fbOk = (p) => S.showIgnored ? true : (p.feedback !== 'down');
+    let feedArr = (S.feedTopic==='all' ? all : all.filter(p=>p.topic===S.feedTopic))
+      .filter(matchQ).filter(readOk).filter(fbOk);
+    const _ts = (p) => (p.date ? Date.parse(p.date) : 0) || 0;
+    if (S.feedSort==='old') feedArr = feedArr.slice().sort((a,b)=>_ts(a)-_ts(b));
+    else if (S.feedSort==='source') feedArr = feedArr.slice().sort((a,b)=>(a.source||'').localeCompare(b.source||''));
+    else feedArr = feedArr.slice().sort((a,b)=>_ts(b)-_ts(a));   // 'new' default
+    const feedList = feedArr.map(decorate);
+    const ignoredCount = all.filter(p => p.feedback==='down').length;
+    const todayCount = all.filter(p => p.today).length;
+    const hasBackfill = all.some(p => p.isBackfill);
+
+    // feed controls: read filter, sort, show-ignored
+    const pill = (active) => 'font-size:12.5px;font-weight:700;border-radius:8px;padding:6px 11px;cursor:pointer;' + (active ? 'color:#fff;background:#16181D;' : 'color:#5B6470;background:#fff;border:1px solid #E4E8ED;');
+    const readTabs = [['all','全部'],['unread','未读'],['read','已读']].map(x => ({ label:x[1], style: pill(S.feedRead===x[0]), onClick: () => this.setState({ feedRead:x[0] }) }));
+    const sortTabs = [['new','最新'],['old','最早'],['source','来源']].map(x => ({ label:x[1], style: pill(S.feedSort===x[0]), onClick: () => this.setState({ feedSort:x[0] }) }));
+    const hasIgnored = ignoredCount > 0;
+    const ignoredLabel = S.showIgnored ? '隐藏已忽略' : ('显示已忽略 ' + ignoredCount);
+    const ignoredStyle = 'font-size:12px;font-weight:700;border-radius:8px;padding:6px 10px;cursor:pointer;color:#B5840E;background:#FBF1D6;';
+    const toggleIgnored = () => this.setState({ showIgnored: !S.showIgnored });
+
+    // trends
+    const trendRaw = [
+      { name:'漏洞修复', en:'Vulnerability Repair', delta:52, growth:48, color:'#2A5BD7' },
+      { name:'C2Rust', en:'C-to-Rust Translation', delta:34, growth:39, color:'#2A5BD7' },
+      { name:'代码翻译', en:'Code Translation', delta:28, growth:22, color:'#2A5BD7' },
+      { name:'Agent 技能', en:'Agent Skills', delta:19, growth:31, color:'#9AAAC9' },
+      { name:'形式化验证', en:'Formal Verification', delta:12, growth:9, color:'#9AAAC9' },
+      { name:'高斯泼溅', en:'Gaussian Splatting', delta:9, growth:5, color:'#9AAAC9' },
+    ];
+    const styleBars = (rows) => { const m = Math.max(1, ...rows.map(r => r.delta)); return rows.map((r,i) => ({ ...r, en: r.en || '', pct: Math.round(r.delta/m*100) + '%', color: i<3 ? '#2A5BD7' : '#9AAAC9' })); };
+    const demoTop3 = trendRaw.slice(0,3).map((t,i) => ({
+      rank:i+1, name:t.name, en:t.en, delta:t.delta, growth:t.growth,
+      summary: [
+        '安全合规驱动下持续升温，RAG 与技能复用成为主流路线，重点解决补丁正确性评测。',
+        '受 DARPA TRACTOR 等项目推动，自动迁移在真实系统软件上逼近零 unsafe，类型推断是关键。',
+        '从 token 级转向执行引导，研究焦点从「能编译」转向「行为一致」的保真度评测。',
+      ][i],
+    }));
+    const trendBars = (R && R.trendBars && R.trendBars.length) ? styleBars(R.trendBars) : styleBars(trendRaw);
+    const decorateTrend = (h, i) => ({ ...h, en: h.en || '', rank: h.rank || i + 1,
+      papers: h.papers || [], onClick: () => this.setState({ trendSel: h }) });
+    const top3 = ((R && R.top3 && R.top3.length) ? R.top3 : demoTop3).map(decorateTrend);
+    // 领域输入 + 时间窗口 + 快选
+    const setDomain = (e) => this.setState({ domain: e.target.value });
+    const winSel = 'font-size:12.5px;font-weight:700;color:#16181D;background:#fff;border-radius:8px;padding:6px 13px;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer';
+    const winUnsel = 'font-size:12.5px;font-weight:600;color:#8A929E;padding:6px 13px;cursor:pointer';
+    const domainChips = ['代码翻译 / 程序语言','人工智能','计算机视觉','系统安全'].map(label => ({
+      label,
+      onClick: () => { this.setState({ domain: label }); this.apiTrends(label, S.trendWindow); },
+      style: 'font-size:12px;font-weight:700;border-radius:20px;padding:5px 12px;cursor:pointer;' + (S.domain===label
+        ? 'background:#EAF0FD;color:#2A5BD7;border:1px solid #C9D9F5;'
+        : 'background:#fff;color:#5B6470;border:1px solid #E4E8ED;'),
+    }));
+
+    // report
+    const SEC_COLORS = ['#2A5BD7','#1F8A5B','#7C4DD9'];
+    const demoPicks = [all[0], all[2], all[3]].filter(Boolean).map((p,i) => ({
+      ...p, open:open(p.id), no:i+1,
+      why: ['本周引用增速最快的 C2Rust 工作，unsafe 削减幅度刷新纪录。','把漏洞修复重构为技能检索，正确率显著领先端到端方案。','技能复用让 Agent 成本降到 1/2.7，对长程任务意义重大。'][i],
+    }));
+    const demoSections = [
+      { name:'C2Rust', color:'#2A5BD7', count:34, text:'本周延续高热度：类型导向的指针迁移与 LLM 迭代修正两条路线并进，工业级真实系统（网络栈、内核模块）开始成为评测目标，零 unsafe 迁移不再是个例。' },
+      { name:'代码翻译', color:'#1F8A5B', count:28, text:'综述与基准类工作集中出现，社区共识正从「可编译率」转向「语义保真度」，差分测试成为衡量翻译质量的新标准。' },
+      { name:'Skill', color:'#7C4DD9', count:19, text:'可复用技能成为 Agent 与自动修复的共同关键词：把验证过的步骤沉淀为带前置条件的技能库，可同时带来成本下降与成功率提升。' },
+    ];
+    const reportPicks = (R && R.report && R.report.picks) ? R.report.picks.map((p,i) => ({ ...p, ...colorize(p), open:open(p.id), no:i+1 })) : demoPicks;
+    const reportSections = (R && R.report && R.report.sections) ? R.report.sections.map((s,i) => ({ ...s, color: SEC_COLORS[i%3] })) : demoSections;
+
+    // library
+    const libBase = (R && R.library) ? R.library.map(p => ({ ...p, ...colorize(p), open:open(p.id) }))
+      : [all[0], all[3], all[4], all[2]].filter(Boolean).map(p => ({
+          ...p, open:open(p.id),
+          note: { p1:'与我们组的 IR 设计思路接近，重点看 §4 的所有权推断，可对比引用。', p4:'技能库的前置条件建模值得借鉴到我们的 pipeline。', p5:'', p3:'' }[p.id] || '',
+        }));
+    const libCounts = {
+      all: libBase.length,
+      read: libBase.filter(p => p.read).length,
+      noted: libBase.filter(p => p.note).length,
+      C2Rust: libBase.filter(p => p.topic==='C2Rust').length,
+    };
+    const libFilterDefs = [
+      { key:'all', label:'全部' },
+      { key:'read', label:'已读' },
+      { key:'noted', label:'有笔记' },
+      { key:'C2Rust', label:'# C2Rust' },
+    ];
+    const libFilterStyle = (active) => 'font-size:12.5px;font-weight:700;border-radius:8px;padding:7px 13px;cursor:pointer;' + (active
+      ? 'color:#fff;background:#16181D;'
+      : 'color:#5B6470;background:#fff;border:1px solid #E4E8ED;font-weight:600;');
+    const libFilters = libFilterDefs.map(f => ({
+      label:f.label, count:libCounts[f.key],
+      style: libFilterStyle(S.libFilter===f.key),
+      onClick: () => this.setState({ libFilter: f.key }),
+    }));
+    const library = libBase.filter(matchQ).filter(p => {
+      if (S.libFilter==='read') return p.read;
+      if (S.libFilter==='noted') return !!p.note;
+      if (S.libFilter==='C2Rust') return p.topic==='C2Rust';
+      return true;
+    });
+
+    // settings
+    const KW_C = ['#2A5BD7','#1F8A5B','#7C4DD9'];
+    const toggleOn = 'width:38px;height:22px;border-radius:20px;background:#2A5BD7;display:flex;align-items:center;padding:2px;justify-content:flex-end;flex-shrink:0;cursor:pointer';
+    const toggleOff = 'width:38px;height:22px;border-radius:20px;background:#D5DAE2;display:flex;align-items:center;padding:2px;justify-content:flex-start;flex-shrink:0;cursor:pointer';
+    const knob = 'width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)';
+    const F = S.form || this.defaultForm();
+    const kwMatch = {};
+    if (R && R.keywords) R.keywords.forEach(k => { kwMatch[k.term] = k.matches; });
+
+    // editable keyword fields
+    const kwFields = F.keywords.map((term, i) => ({
+      no: i + 1, color: KW_C[i % 3], term, matches: kwMatch[term] || 0,
+      onInput: (e) => { const v = e.target.value; this.setState(st => { const ks = [...st.form.keywords]; ks[i] = v; return { form: { ...st.form, keywords: ks }, saveMsg: '' }; }); },
+      remove: () => this.setState(st => ({ form: { ...st.form, keywords: st.form.keywords.filter((_, j) => j !== i) }, saveMsg: '' })),
+    }));
+    const canAddKw = F.keywords.length < 3;
+    const addKw = () => this.setState(st => ({ form: { ...st.form, keywords: [...st.form.keywords, ''] }, saveMsg: '' }));
+
+    const SRC_META = {
+      'arXiv': { color:'#B31B1B', bg:'#FBEAEA', desc:'预印本 · cs.PL / cs.SE' },
+      'Crossref': { color:'#5B6470', bg:'#EEF1F5', desc:'期刊/会议元数据（含 IEEE·ACM）' },
+      'Google Scholar': { color:'#1A73E8', bg:'#E8F0FE', desc:'综合学术检索' },
+      'GitHub': { color:'#1F2328', bg:'#EAECEF', desc:'实时仓库 / 论文代码' },
+      'HuggingFace': { color:'#D97706', bg:'#FEF3E2', desc:'热门预印本' },
+      'PapersWithCode': { color:'#0EA5A5', bg:'#E1F5F5', desc:'论文 + 代码' },
+      '学术新闻': { color:'#7C4DD9', bg:'#F0EAFB', desc:'机构 / 博客 RSS' },
+      'Nature': { color:'#D42A14', bg:'#FDE8E5', desc:'Nature 系列期刊（含 Nat. Commun. 等）' },
+      'ACS': { color:'#00629B', bg:'#E1EEF6', desc:'JACS / ACS SynBio 等 ACS 期刊' },
+      'PubMed': { color:'#2E8B57', bg:'#E8F5EE', desc:'PubMed / MEDLINE 生物医学文献' },
+    };
+    const sources = Object.keys(SRC_META).map(name => {
+      const on = F.sources[name] !== false;
+      return { name, ...SRC_META[name], on, toggle: on?toggleOn:toggleOff, knob,
+        onToggle: () => this.setState(st => ({ form: { ...st.form, sources: { ...st.form.sources, [name]: !(st.form.sources[name] !== false) } }, saveMsg: '' })) };
+    });
+
+    const chanToggle = (key) => () => this.setState(st => ({ form: { ...st.form, channels: { ...st.form.channels, [key]: !st.form.channels[key] } }, saveMsg: '' }));
+    const channels = [
+      { icon:'✉️', name:'邮件摘要', detail:'每次刷新后把当天文献发到邮箱', key:'email', on: !!F.channels.email },
+      { icon:'🔔', name:'浏览器通知', detail:'有今日新文献时弹出系统通知', key:'browser', on: !!F.channels.browser },
+      { icon:'✈️', name:'Telegram', detail:'定时推送到 Telegram（.env 配 BOT_TOKEN/CHAT_ID）', key:'telegram', on: !!F.channels.telegram },
+      { icon:'💬', name:'Slack', detail:'定时推送到 Slack（.env 配 Webhook URL）', key:'slack', on: !!F.channels.slack },
+      { icon:'🟢', name:'微信', detail:'企业微信群机器人 或 Server酱（.env 配 WECHAT_WEBHOOK / SERVERCHAN_KEY）', key:'wechat', on: !!F.channels.wechat },
+    ].map(c => ({ ...c, toggle: c.on?toggleOn:toggleOff, knob, onToggle: chanToggle(c.key) }));
+
+    return {
+      nav,
+      isFeed:S.screen==='feed', isTrends:S.screen==='trends', isReport:S.screen==='report',
+      isLibrary:S.screen==='library', isSettings:S.screen==='settings',
+      isDeepSearch:S.screen==='deepsearch',
+      topicTabs, feed:feedList,
+      readTabs, sortTabs, hasIgnored, ignoredLabel, ignoredStyle, toggleIgnored,
+      todayCount: R ? R.todayCount : todayCount,
+      hasBackfill: R ? R.hasBackfill : hasBackfill,
+      backfillN: F.backfillN,
+      notConfigured: !!(R && !R.configured),
+      goSettings: () => this.setState({ screen:'settings' }),
+      trendBars, top3,
+      domain:S.domain, setDomain, domainChips,
+      win7Style: S.trendWindow===7 ? winSel : winUnsel,
+      win30Style: S.trendWindow===30 ? winSel : winUnsel,
+      setWindow7: () => { this.setState({ trendWindow:7 }); this.apiTrends(S.domain, 7); },
+      setWindow30: () => { this.setState({ trendWindow:30 }); this.apiTrends(S.domain, 30); },
+      reportPicks, reportSections,
+      library, libFilters, libEmpty: library.length===0,
+      kwFields, canAddKw, addKw,
+      formDomain: F.domain, setFormDomain: (e) => this.setForm({ domain: e.target.value }),
+      formEmail: F.email, setFormEmail: (e) => this.setForm({ email: e.target.value }),
+      emailOn: !!F.channels.email,
+      sources, channels,
+      incBackfill: () => this.setForm({ backfillN: Math.min(20, F.backfillN + 1) }),
+      decBackfill: () => this.setForm({ backfillN: Math.max(1, F.backfillN - 1) }),
+      saveMsg: S.saveMsg, loading: S.loading, notLoading: !S.loading,
+      saveOnly: () => this.saveSettings(false),
+      saveAndRefresh: () => this.saveSettings(true),
+      detailOpen: !!S.selectedId,
+      paper: (() => {
+        const sp = S.selectedId ? byId[S.selectedId] : null;
+        if (!sp) return {};
+        const saved = R ? !!sp.saved : !!S.saved[sp.id];
+        return { ...sp, ...colorize(sp),
+          saveLabel: saved ? '★ 已在文库' : '★ 收藏到文库',
+          toggleSaveDetail: () => {
+            if (R) this.apiSave(sp.id, { saved: !sp.saved });
+            else this.setState(st => ({ saved: { ...st.saved, [sp.id]: !st.saved[sp.id] } }));
+          },
+          copyBibtex: () => this.copyBibtex(sp),
+          bibMsg: S.bibMsg || '',
+          noteVal: S.noteDraft,
+          setNote: (e) => this.setState({ noteDraft: e.target.value }),
+          saveNote: () => { if (R) this.apiSave(sp.id, { note: S.noteDraft || '' }); },
+        };
+      })(),
+      closePaper: () => this.setState({ selectedId:null }),
+      refresh: () => this.apiRefresh(),
+      refreshLabel: S.loading ? '刷新中…' : '立即刷新',
+      refreshing: !!(S.loading || (R && R.refreshing)),
+      refreshStage: (R && R.refreshStage) || '刷新中…',
+      themeIcon: (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark') ? '☀️' : '🌙',
+      toggleTheme: () => {
+        const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', cur);
+        try { localStorage.setItem('ap_theme', cur); } catch (e) {}
+        this.forceUpdate();
+      },
+      query: S.query, setQuery: (e) => this.setState({ query: e.target.value }),
+      trendOpen: !!S.trendSel,
+      trend: S.trendSel ? {
+        ...S.trendSel, en: S.trendSel.en || '', summary: S.trendSel.summary || '（暂无总结）',
+        papers: (S.trendSel.papers || []).map(p => ({ ...p, ...colorize(p), venue: p.venue || '' })),
+        count: (S.trendSel.papers || []).length, empty: !(S.trendSel.papers || []).length,
+      } : {},
+      closeTrend: () => this.setState({ trendSel:null }),
+
+      // ===== Deep Search =====
+      isDeepSearch: S.screen==='deepsearch',
+      dsSearching: !!S.dsSearching,
+      dsNotSearching: !S.dsSearching,
+      dsHasSearched: !!S.dsHasSearched,
+      dsTotal: (S.dsResults || []).length,
+      dsDetailOpen: !!S.dsSelected,
+      dsCloseDetail: () => this.setState({ dsSelected: null }),
+      dsSelected: S.dsSelected ? (() => {
+        const p = S.dsSelected;
+        return { ...p,
+          contributions: p.contributions || [],
+          sourceColor: p.sourceColor || '#5B6470',
+          sourceBg: p.sourceBg || '#EEF1F5',
+        };
+      })() : {},
+      dsResults: (S.dsResults || []).map(p => ({
+        ...p, contributions: p.contributions || [],
+        open: () => this.setState({ dsSelected: p }),
+      })),
+      dsCanAddKw: (S.dsKeywords || ['','']).length < 3,
+      dsAddKw: () => this.setState(st => ({ dsKeywords: [...(st.dsKeywords || ['','']), ''] })),
+      dsKwFields: (S.dsKeywords || ['','']).map((term, i) => ({
+        no: i + 1,
+        color: KW_C[i % 3],
+        term,
+        placeholder: `关键词 ${i + 1}，如：${['protein design','deep learning','molecular dynamics'][i] || ''}`,
+        canRemove: (S.dsKeywords || ['','']).length > 1,
+        remove: () => this.setState(st => ({ dsKeywords: st.dsKeywords.filter((_, j) => j !== i) })),
+        onInput: (e) => {
+          const v = e.target.value;
+          this.setState(st => { const ks = [...(st.dsKeywords || ['',''])]; ks[i] = v; return { dsKeywords: ks }; });
+        },
+      })),
+      dsTimeOptions: [30, 90, 180, 365, 730, 1825, 3650, -1].map(d => ({
+        label: {30:'近 1 个月',90:'近 3 个月',180:'近 6 个月',365:'近 1 年',730:'近 2 年',1825:'近 5 年',3650:'近 10 年',[-1]:'不限'}[d],
+        style: 'font-size:12.5px;font-weight:700;padding:5px 13px;border-radius:8px;cursor:pointer;' + ((S.dsTimeRange||365)===d ? 'background:#fff;color:#16181D;box-shadow:0 1px 3px rgba(0,0,0,.12)' : 'color:#5B6470;'),
+        onClick: () => this.setState({ dsTimeRange: d }),
+      })),
+      dsSources: Object.keys(SRC_META).map(name => {
+        const on = F.sources[name] !== false;
+        const meta = SRC_META[name];
+        return { name, ...meta, opacity: on ? 1 : 0.35,
+          onToggle: () => this.setState(st => ({ form: { ...st.form, sources: { ...st.form.sources, [name]: !on } }, saveMsg: '' })),
+        };
+      }),
+      dsSearch: async () => {
+        const kws = (S.dsKeywords || ['','']).map(s => s.trim()).filter(Boolean);
+        if (!kws.length) return;
+        this.setState({ dsSearching: true, dsResults: [], dsHasSearched: false });
+        const base = this.api();
+        if (!base) { this.setState({ dsSearching: false, dsResults: [], dsHasSearched: true }); return; }
+        try {
+          const r = await fetch(base + '/deep-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ keywords: kws, time_range_days: S.dsTimeRange || 365, sources: F.sources }),
+          });
+          const data = await r.json();
+          this.setState({ dsResults: data.results || [], dsSearching: false, dsHasSearched: true });
+        } catch (e) {
+          console.warn('[deep-search] error:', e);
+          this.setState({ dsSearching: false, dsHasSearched: true });
+        }
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

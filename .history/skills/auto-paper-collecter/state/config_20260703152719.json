@@ -1,0 +1,16 @@
+{
+  "keywords": ["bioinformatics", "computational biology", "synthetic biology", "protein structure prediction"],
+  "domain": "biology",
+  "sources": {
+    "arXiv": true,
+    "Crossref": true,
+    "Semantic Scholar": true,
+    "GitHub": true,
+    "HuggingFace": true,
+    "PapersWithCode": true,
+    "RSS": true
+  },
+  "lookback_days": 5,
+  "max_per_source": 12,
+  "rss_feeds": ["http://export.arxiv.org/rss/cs.CL"]
+}
