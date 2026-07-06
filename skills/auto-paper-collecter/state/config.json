@@ -1,6 +1,6 @@
 {
-  "keywords": ["large language models", "retrieval augmented generation"],
-  "domain": "computer science",
+  "keywords": ["bioinformatics", "computational biology", "synthetic biology", "protein structure prediction"],
+  "domain": "biology",
   "sources": {
     "arXiv": true,
     "Crossref": true,
@@ -8,9 +8,20 @@
     "GitHub": true,
     "HuggingFace": true,
     "PapersWithCode": true,
-    "RSS": true
+    "RSS": true,
+    "bioRxiv": true,
+    "ChemRxiv": true
   },
   "lookback_days": 5,
   "max_per_source": 12,
-  "rss_feeds": ["http://export.arxiv.org/rss/cs.CL"]
+  "rss_feeds": [
+    "http://export.arxiv.org/rss/q-bio",
+    "http://export.arxiv.org/rss/q-bio.BM",
+    "http://export.arxiv.org/rss/q-bio.GN",
+    "http://export.arxiv.org/rss/q-bio.MN",
+    "https://connect.biorxiv.org/biorxiv_xml.php?subject=all",
+    "https://connect.biorxiv.org/biorxiv_xml.php?subject=bioinformatics",
+    "https://connect.biorxiv.org/biorxiv_xml.php?subject=synthetic_biology",
+    "https://chemrxiv.org/engage/rss/chemrxiv"
+  ]
 }

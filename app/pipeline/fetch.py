@@ -8,7 +8,9 @@ from sqlalchemy.exc import IntegrityError
 from ..db import SessionLocal
 from ..models import Paper, UserSettings, SavedItem
 from ..sources import (arxiv, crossref, semanticscholar, rss_news, github,
-                       huggingface, paperswithcode)
+                       huggingface, paperswithcode, nature, acs, biorxiv,
+                       chemrxiv, pubmed, pmc)
+from ..sources.pubmed import set_journals as set_pubmed_journals
 from .dedup import dedup
 from .summarize import summarize
 from .smart import expand_queries, filter_relevant
@@ -38,6 +40,12 @@ SOURCE_FUNCS = {
     "HuggingFace": huggingface.search,   # trending, arXiv-linked papers
     "PapersWithCode": paperswithcode.search,  # papers + linked code
     "学术新闻": rss_news.search,
+    "Nature": nature.search,             # Nature family journals (via Crossref ISSN)
+    "ACS": acs.search,                   # ACS journals: JACS, ACS SynBio, etc.
+    "bioRxiv": biorxiv.search,           # bioRxiv preprints
+    "ChemRxiv": chemrxiv.search,         # ChemRxiv preprints
+    "PubMed": pubmed.search,
+    "PMC": pmc.search,
 }
 
 
@@ -47,9 +55,23 @@ def get_or_create_settings(db):
         s = UserSettings(
             id=1, keywords="[]", domain="", sources=json.dumps({
                 "arXiv": True, "Crossref": True, "Google Scholar": True,
-                "GitHub": True, "HuggingFace": True, "PapersWithCode": True, "学术新闻": True
+                "GitHub": True, "HuggingFace": True, "PapersWithCode": True,
+                "学术新闻": True, "Nature": True, "ACS": True,
+                "bioRxiv": True, "ChemRxiv": True, "PubMed": True, "PMC": True,
             }), refresh_times="10:00,22:00", backfill_n=5,
             channels=json.dumps({"email": False, "browser": True}), email="",
+            pubmed_journals=json.dumps(["Nat Biotechnol", "Nat Commun", "Science",
+                                        "Nature", "Cell", "Nat Chem Biol", "Nat Methods",
+                                        "Nat Microbiol", "Nat Synth", "Nat Protoc",
+                                        "Nat Rev Genet", "Nat Catal", "Nat Comput Sci",
+                                        "Nat Metab", "Nat Chem Eng", "Nat Mach Intell",
+                                        "Nat Ecol Evol", "Nat Biomed Eng",
+                                        "J Am Chem Soc", "JACS Au", "ACS Synth Biol",
+                                        "ACS Chem Biol", "Biochemistry", "ACS Cent Sci",
+                                        "J Med Chem", "ACS Catal", "Org Lett", "J Org Chem",
+                                        "Anal Chem", "J Agric Food Chem", "J Nat Prod",
+                                        "Angew Chem Int Ed Engl", "J Antibiot",
+                                        "J Chem Inf Model"]),
         )
         db.add(s); db.commit(); db.refresh(s)
     return s
@@ -121,6 +143,9 @@ async def run_refresh(max_summaries: int = 20):
                         .join(SavedItem, SavedItem.paper_id == Paper.id)
                         .filter(SavedItem.feedback == "down").limit(30).all()]
 
+            # Configure PubMed journal filter from settings
+            pm_journals = json.loads(s.pubmed_journals or "null")
+            set_pubmed_journals(pm_journals if isinstance(pm_journals, list) else None)
             kws = keywords[:3]
             raw = []
             for i, kw in enumerate(kws, 1):

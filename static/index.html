@@ -393,8 +393,8 @@
         <!-- domain -->
         <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:18px">
           <div style="font-size:15px;font-weight:800;margin-bottom:4px">热点分析领域</div>
-          <div style="font-size:12.5px;color:#8A929E;margin-bottom:16px">“领域热点”页面会在这个领域内统计细分方向的发文增量。</div>
-          <input value="{{ formDomain }}" onInput="{{ setFormDomain }}" placeholder="例如：program language / artificial intelligence" style="width:100%;height:40px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 14px;font-size:14px;font-weight:600;font-family:inherit;color:#16181D;outline:none">
+          <div style="font-size:12.5px;color:#8A929E;margin-bottom:16px">设定一个宽泛的领域，帮助 LLM 更好地扩写关键词和筛选文献。留空则不限领域。</div>
+          <input value="{{ formDomain }}" onInput="{{ setFormDomain }}" placeholder="例如：天然产物化学 / 人工智能 / 细胞生物学" style="width:100%;height:40px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 14px;font-size:14px;font-weight:600;font-family:inherit;color:#16181D;outline:none">
         </div>
 
         <!-- sources -->
@@ -410,6 +410,26 @@
             </sc-for>
           </div>
         </div>
+
+        <!-- PubMed journal selection -->
+        <sc-if value="{{ showPubMedJournals }}" hint-placeholder-val="">
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <div style="font-size:15px;font-weight:800">PubMed 期刊限定</div>
+            <div style="display:flex;gap:6px">
+              <span onClick="{{ selectAllPmJ }}" style="font-size:12px;font-weight:700;color:#2A5BD7;cursor:pointer">全选</span>
+              <span style="font-size:12px;color:#A4ACB8">·</span>
+              <span onClick="{{ clearAllPmJ }}" style="font-size:12px;font-weight:700;color:#8A929E;cursor:pointer">清空（搜全库）</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#8A929E;margin-bottom:14px">不选任何期刊则搜索整个 PubMed 数据库。</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ pmJournalToggles }}" as="j" hint-placeholder-count="8">
+              <span onClick="{{ j.onClick }}" style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;cursor:pointer;color:{{ j.color }};background:{{ j.bg }};opacity:{{ j.opacity }};transition:opacity .15s">{{ j.name }}</span>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
 
         <!-- refresh -->
         <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:18px">
@@ -471,8 +491,177 @@
       </section>
       </sc-if>
 
+      <!-- ========== DEEP SEARCH ========== -->
+      <sc-if value="{{ isDeepSearch }}" hint-placeholder-val="">
+      <section style="max-width:900px;margin:0 auto;padding:30px 34px 60px">
+        <h1 style="font-size:25px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px">深度搜索</h1>
+        <p style="font-size:13.5px;color:#5B6470;margin-bottom:24px">多关键词 AND 组合 + 可配置时间范围，做更精确的文献回溯。每个关键词会<strong>自动扩写</strong>后与其他关键词取 AND 交集。</p>
+
+        <!-- search form -->
+        <div style="background:#fff;border:1px solid #EAEDF1;border-radius:16px;padding:22px 24px;margin-bottom:16px">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px">搜索关键词（最多 3 个，用 AND 组合）</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+            <sc-for list="{{ dsKwFields }}" as="kw" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="width:22px;height:22px;border-radius:6px;background:{{ kw.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">{{ kw.no }}</span>
+                <input value="{{ kw.term }}" onInput="{{ kw.onInput }}" placeholder="{{ kw.placeholder }}" style="flex:1;height:40px;border:1px solid #E4E8ED;border-radius:10px;background:#F7F9FB;padding:0 13px;font-size:13.5px;font-family:inherit;color:#16181D;outline:none">
+                <sc-if value="{{ kw.canRemove }}" hint-placeholder-val="">
+                  <span onClick="{{ kw.remove }}" style="font-size:16px;color:#A4ACB8;cursor:pointer;padding:4px" style-hover="color:#D42A14">✕</span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ dsCanAddKw }}" hint-placeholder-val="">
+            <button onClick="{{ dsAddKw }}" style="height:36px;background:#F1F4F8;border:1px dashed #C9D4EE;border-radius:10px;font-size:12.5px;font-weight:700;color:#5B6470;font-family:inherit;padding:0 16px;cursor:pointer;width:100%" style-hover="background:#E7EBF1">+ 添加关键词</button>
+          </sc-if>
+
+          <div style="height:1px;background:#EAEDF1;margin:18px 0"></div>
+
+          <div style="display:flex;gap:20px;flex-wrap:wrap">
+            <div style="flex:1;min-width:160px">
+              <div style="font-size:12.5px;font-weight:700;color:#5B6470;margin-bottom:8px">时间范围</div>
+              <div style="display:flex;background:#EEF1F5;border-radius:10px;padding:3px;flex-wrap:wrap">
+                <sc-for list="{{ dsTimeOptions }}" as="t" hint-placeholder-count="4">
+                  <span onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="flex:2;min-width:200px">
+              <div style="font-size:12.5px;font-weight:700;color:#5B6470;margin-bottom:8px">检索来源 <a onClick="{{ goSettings }}" style="font-weight:400;color:#2A5BD7;cursor:pointer;text-decoration:none">（在订阅设置中管理）</a></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <sc-for list="{{ dsSources }}" as="s" hint-placeholder-count="6">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;color:{{ s.color }};background:{{ s.bg }};cursor:pointer;opacity:{{ s.opacity }};transition:opacity .15s" onClick="{{ s.onToggle }}">{{ s.name }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button onClick="{{ dsSearch }}" style="height:44px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(120deg,#2A5BD7,#3F6FE5);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;padding:0 22px;cursor:pointer;margin-bottom:16px" style-hover="background:#1E48B5">
+          <sc-if value="{{ dsSearching }}" hint-placeholder-val="">
+            <span style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;display:inline-block;animation:fadeIn .7s ease infinite alternate"></span>
+            搜索中…（约 1-3 分钟）
+          </sc-if>
+          <sc-if value="{{ dsNotSearching }}" hint-placeholder-val="{{ true }}">
+            {{ dsSearchIcon }} {{ dsSearchLabel }}
+          </sc-if>
+        </button>
+
+        <sc-if value="{{ dsHasSearched }}" hint-placeholder-val="">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+            <span style="font-size:13px;color:#5B6470;font-weight:600">共找到 <b style="color:#2A5BD7;font-size:18px">{{ dsTotal }}</b> 篇相关论文</span>
+            <div style="flex:1"></div>
+            <span style="font-size:12px;color:#8A929E;font-weight:600">排序</span>
+            <sc-for list="{{ dsSortTabs }}" as="s" hint-placeholder-count="2">
+              <span onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</span>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <sc-for list="{{ dsResults }}" as="p" hint-placeholder-count="5">
+              <article onClick="{{ p.open }}" style="background:#fff;border:1px solid #EAEDF1;border-radius:14px;padding:19px 21px;cursor:pointer;transition:border-color .15s,box-shadow .15s" style-hover="border-color:#C9D4EE;box-shadow:0 6px 22px -10px rgba(42,91,215,0.22)">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;color:{{ p.sourceColor }};background:{{ p.sourceBg }}">{{ p.source }}</span>
+                  <span style="font-size:12px;color:#A4ACB8;font-weight:600">{{ p.publishedAgo }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#2A5BD7;font-weight:600">{{ p.published }}</span>
+                  <div style="flex:1"></div>
+                  <sc-if value="{{ p.topic }}" hint-placeholder-val="">
+                    <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px;margin-right:6px">{{ p.topic }}</span>
+                  </sc-if>
+                  <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px">{{ p.venue }}</span>
+                  <sc-if value="{{ p.if }}" hint-placeholder-val="">
+                    <span style="font-size:11px;font-weight:700;color:#C9970A;background:#FBF3DC;border-radius:5px;padding:2px 7px">IF {{ p.if }}</span>
+                  </sc-if>
+                </div>
+                <h3 style="font-family:'Source Serif 4',serif;font-size:18.5px;font-weight:600;line-height:1.32;letter-spacing:-0.2px;margin-bottom:7px;text-wrap:pretty">{{ p.title }}</h3>
+                <div style="font-size:12.5px;color:#8A929E;font-weight:500;margin-bottom:10px">{{ p.authorsStr }}</div>
+                <p style="font-size:13.5px;color:#475059;line-height:1.62;text-wrap:pretty">{{ p.abstract }}</p>
+                <sc-if value="{{ p.tldr }}" hint-placeholder-val="">
+                  <div style="display:flex;align-items:center;gap:7px;margin-top:14px">
+                    <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#2A5BD7;background:#EAF0FD;border-radius:7px;padding:5px 10px">✦ AI 摘要</span>
+                    <div style="flex:1"></div>
+                    <span onClick="{{ p.thumbUp }}" title="相关，多推这类" style="{{ p.upStyle }}">👍</span>
+                    <span onClick="{{ p.thumbDown }}" title="不相关，少推这类" style="{{ p.downStyle }}">👎</span>
+                    <span onClick="{{ p.toggleSave }}" style="{{ p.saveStyle }}">{{ p.saveIcon }} 收藏</span>
+                    <a href="{{ p.url }}" target="_blank" rel="noopener" style="font-size:12px;font-weight:700;color:#2A5BD7;padding:5px 11px;border-radius:7px;border:1px solid #C9D9F5;background:#F3F7FF;text-decoration:none;display:inline-flex;align-items:center;gap:4px" style-hover="background:#E6EEFD;border-color:#A9C2EF">↗ 访问原文</a>
+                  </div>
+                  <p style="font-size:13.5px;color:#475059;line-height:1.62;margin-top:10px;margin-bottom:0">{{ p.tldr }}</p>
+                </sc-if>
+              </article>
+            </sc-for>
+          </div>
+        </sc-if>
+      </section>
+      </sc-if>
+
     </div>
   </main>
+
+  <!-- ===== DEEP SEARCH DETAIL SLIDE-OVER ===== -->
+  <sc-if value="{{ dsDetailOpen }}" hint-placeholder-val="">
+  <div style="position:fixed;inset:0;z-index:50">
+    <div onClick="{{ dsCloseDetail }}" style="position:absolute;inset:0;background:rgba(20,24,33,0.42);animation:fadeIn .2s ease"></div>
+    <div style="position:absolute;top:0;right:0;height:100vh;width:560px;max-width:92vw;background:#fff;box-shadow:-20px 0 60px -20px rgba(0,0,0,0.3);animation:slideOver .28s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column">
+      <div style="flex-shrink:0;padding:18px 26px;border-bottom:1px solid #EAEDF1;display:flex;align-items:center;gap:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;color:{{ dsSelected.sourceColor }};background:{{ dsSelected.sourceBg }}">{{ dsSelected.source }}</span>
+        <span style="font-size:12px;color:#A4ACB8;font-weight:600">{{ dsSelected.publishedAgo }}</span>
+        <div style="flex:1"></div>
+        <span onClick="{{ dsCloseDetail }}" style="font-size:20px;color:#A4ACB8;cursor:pointer;line-height:1" style-hover="color:#16181D">✕</span>
+      </div>
+
+      <div style="flex:1;overflow-y:auto;padding:26px 28px 40px">
+        <span style="font-size:11.5px;font-weight:700;color:#5B6470;background:#F1F4F8;border-radius:6px;padding:3px 9px">{{ dsSelected.venue }}</span>
+        <sc-if value="{{ dsSelected.if }}" hint-placeholder-val="">
+          <span style="font-size:11px;font-weight:700;color:#C9970A;background:#FBF3DC;border-radius:5px;padding:2px 7px">IF {{ dsSelected.if }}</span>
+        </sc-if>
+        <h2 style="font-family:'Source Serif 4',serif;font-size:23px;font-weight:600;line-height:1.3;letter-spacing:-0.3px;margin:13px 0 9px;text-wrap:pretty">{{ dsSelected.title }}</h2>
+        <div style="font-size:13px;color:#8A929E;font-weight:500;margin-bottom:22px">{{ dsSelected.authorsStr }} · {{ dsSelected.venue }}</div>
+
+        <sc-if value="{{ dsSelected.tldr }}" hint-placeholder-val="">
+        <div style="background:linear-gradient(135deg,#EEF3FE,#F3F0FD);border:1px solid #DCE6FA;border-radius:14px;padding:18px 20px;margin-bottom:24px">
+          <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:#2A5BD7;margin-bottom:11px">✦ AI 摘要</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:5px">一句话 TL;DR</div>
+          <p style="font-size:14px;color:#2A3340;line-height:1.6;margin-bottom:16px">{{ dsSelected.tldr }}</p>
+          <sc-if value="{{ dsSelected.method }}" hint-placeholder-val="">
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:5px">方法</div>
+          <p style="font-size:13.5px;color:#475059;line-height:1.62;margin-bottom:16px">{{ dsSelected.method }}</p>
+          </sc-if>
+          <sc-if value="{{ dsSelected.contributions.length }}" hint-placeholder-val="">
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:8px">核心贡献</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ dsSelected.contributions }}" as="c" hint-placeholder-count="3">
+              <div style="display:flex;gap:9px;align-items:flex-start">
+                <span style="color:#2A5BD7;font-weight:800;font-size:13px;line-height:1.5">›</span>
+                <span style="font-size:13.5px;color:#2A3340;line-height:1.55">{{ c }}</span>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+        </sc-if>
+
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:6px">原始摘要</div>
+        <p style="font-size:13.5px;color:#475059;line-height:1.7;margin-bottom:24px">{{ dsSelected.abstract }}</p>
+
+        <!-- 相关文献 -->
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:6px">相关文献</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:24px">
+          <div style="border:1px solid #EAEDF1;border-radius:11px;padding:12px 14px">
+            <div style="font-size:12.5px;color:#A4ACB8;font-weight:500">（深度搜索结果暂不支持相关文献推荐）</div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.05em;color:#8A929E;text-transform:uppercase;margin-bottom:8px">我的笔记</div>
+        <textarea value="{{ dsSelectedNote }}" onInput="{{ dsSetNote }}" onBlur="{{ dsSaveNote }}" placeholder="记录想法、待办、与其它工作的关联…（失焦自动保存）" style="width:100%;min-height:84px;border:1px solid #E4E8ED;border-radius:11px;background:#F7F9FB;padding:12px 14px;font-size:13.5px;font-family:inherit;color:#16181D;line-height:1.6;resize:vertical;outline:none"></textarea>
+      </div>
+
+      <div style="flex-shrink:0;padding:14px 26px;border-top:1px solid #EAEDF1;display:flex;gap:10px;align-items:center">
+        <button onClick="{{ dsToggleSave }}" style="flex:1;height:42px;background:#2A5BD7;color:#fff;border:none;border-radius:11px;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer" style-hover="background:#1E48B5">{{ dsSaveLabel }}</button>
+        <a href="{{ dsSelected.url }}" target="_blank" rel="noopener" style="height:42px;display:flex;align-items:center;background:#2A5BD7;color:#fff;border-radius:11px;font-size:13px;font-weight:700;padding:0 16px;cursor:pointer;text-decoration:none" style-hover="background:#1E48B5">↗ 访问原文</a>
+      </div>
+    </div>
+  </div>
+  </sc-if>
 
   <!-- ===== DETAIL SLIDE-OVER ===== -->
   <sc-if value="{{ detailOpen }}" hint-placeholder-val="">
@@ -600,9 +789,10 @@ class Component extends DCLogic {
     return {
       keywords: [],
       domain: '',
-      sources: { 'arXiv': true, 'Crossref': true, 'Google Scholar': true, 'GitHub': true, '学术新闻': true },
+      sources: { 'arXiv': true, 'Crossref': true, 'Google Scholar': true, 'GitHub': true, '学术新闻': true, 'Nature': true, 'ACS': true, 'PubMed': true, 'bioRxiv': true, 'ChemRxiv': true, 'PMC': true },
       channels: { email: false, browser: true },
       email: '', backfillN: 5,
+      pubmedJournals: [],
     };
   }
 
@@ -615,6 +805,7 @@ class Component extends DCLogic {
       sources: Object.keys(srcMap).length ? srcMap : this.defaultForm().sources,
       channels: data.channels && Object.keys(data.channels).length ? { ...data.channels } : { email: false, browser: true },
       email: data.email || '', backfillN: data.backfillN || 5,
+      pubmedJournals: data.pubmedJournals || [],
     };
   }
 
@@ -648,6 +839,7 @@ class Component extends DCLogic {
       keywords: f.keywords.map(s => s.trim()).filter(Boolean).slice(0, 3),
       domain: f.domain, sources: f.sources, channels: f.channels,
       email: f.email, backfill_n: f.backfillN,
+      pubmed_journals: f.pubmedJournals,
     };
     if (!base) { this.setState({ saveMsg: '已保存（演示模式，未连后端）' }); return; }
     await fetch(base + '/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -688,6 +880,33 @@ class Component extends DCLogic {
       });
       this.reloadBootstrap();
     } catch (e) { /* ignore */ }
+  }
+
+  async dsSave(p, fields) {
+    const base = this.api(); if (!base) return;
+    try {
+      if (p.id) {
+        await fetch(base + '/library/' + p.id, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(fields),
+        });
+      } else {
+        await fetch(base + '/save-by-ref', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ extId: p.extId, source: p.source, title: p.title,
+            abstract: p.abstract, authors: JSON.stringify(p.authors || []),
+            url: p.url, venue: p.venue, doi: p.doi, published: p.published,
+            tldr: p.tldr, ...fields }),
+        });
+      }
+      this.reloadBootstrap();
+    } catch (e) { /* ignore */ }
+  }
+
+  _dsPatchResult(extId, field, val) {
+    this.setState(st => ({
+      dsResults: (st.dsResults || []).map(p => p.extId === extId ? { ...p, [field]: val } : p),
+    }));
   }
 
   async apiTrends(domain, window) {
@@ -864,10 +1083,11 @@ class Component extends DCLogic {
       { key:'report', label:'每周报告', icon:'▦', badge:'' },
       { key:'library', label:'收藏与笔记', icon:'★', badge:'' },
       { key:'settings', label:'订阅设置', icon:'⚙', badge:'' },
+      { key:'deepsearch', label:'深度搜索', icon:'⌕', badge:'' },
     ].map(n => ({ ...n, onClick:set(n.key), style:this.navStyle(n.key, S.screen===n.key), iconStyle:this.iconStyle(S.screen===n.key) }));
 
     // source → badge colors (for remote items lacking explicit color)
-    const SRCMAP = { 'arXiv':['#B31B1B','#FBEAEA'], 'Google Scholar':['#1A73E8','#E8F0FE'], 'IEEE':['#00629B','#E1EEF6'], 'ACM':['#0F6FB5','#E3F0F8'], 'Crossref':['#5B6470','#EEF1F5'], 'GitHub':['#1F2328','#EAECEF'], 'HuggingFace':['#D97706','#FEF3E2'], 'PapersWithCode':['#0EA5A5','#E1F5F5'], '学术新闻':['#7C4DD9','#F0EAFB'] };
+    const SRCMAP = { 'arXiv':['#B31B1B','#FBEAEA'], 'Google Scholar':['#1A73E8','#E8F0FE'], 'IEEE':['#00629B','#E1EEF6'], 'ACM':['#0F6FB5','#E3F0F8'], 'Crossref':['#5B6470','#EEF1F5'], 'GitHub':['#1F2328','#EAECEF'], 'HuggingFace':['#D97706','#FEF3E2'], 'PapersWithCode':['#0EA5A5','#E1F5F5'], '学术新闻':['#7C4DD9','#F0EAFB'], 'PubMed':['#2E8B57','#E8F5EE'], 'bioRxiv':['#D66B1F','#FDF0E5'], 'ChemRxiv':['#8B5CF6','#F0EAFE'], 'PMC':['#E65100','#FDE8D8'] };
     const colorize = (o) => { const c = SRCMAP[o.source] || SRCMAP['Crossref']; return { sourceColor: o.sourceColor || c[0], sourceBg: o.sourceBg || c[1] }; };
 
     // feed topic tabs — dynamic from data when remote
@@ -1040,7 +1260,62 @@ class Component extends DCLogic {
       'HuggingFace': { color:'#D97706', bg:'#FEF3E2', desc:'热门预印本' },
       'PapersWithCode': { color:'#0EA5A5', bg:'#E1F5F5', desc:'论文 + 代码' },
       '学术新闻': { color:'#7C4DD9', bg:'#F0EAFB', desc:'机构 / 博客 RSS' },
+      'Nature': { color:'#D42A14', bg:'#FDE8E5', desc:'Nature 系列期刊（含 Nat. Commun. 等）' },
+      'ACS': { color:'#00629B', bg:'#E1EEF6', desc:'JACS / ACS SynBio 等 ACS 期刊' },
+      'PubMed': { color:'#2E8B57', bg:'#E8F5EE', desc:'PubMed / MEDLINE 生物医学文献' },
+      'PMC': { color:'#E65100', bg:'#FDE8D8', desc:'PubMed Central 全文库（含正文检索）' },
+      'bioRxiv': { color:'#D66B1F', bg:'#FDF0E5', desc:'生物学预印本' },
+      'ChemRxiv': { color:'#8B5CF6', bg:'#F0EAFE', desc:'化学预印本' },
     };
+
+    // ── PubMed journal selector ────────────────────────────────
+    const ALL_PM_JOURNALS = [
+      "Nat Biotechnol","Nat Commun","Science","Nature","Cell",
+      "Nat Chem Biol","Nat Methods","Nat Microbiol","Nat Synth",
+      "Nat Protoc","Nat Rev Genet","Nat Catal","Nat Comput Sci",
+      "Nat Metab","Nat Chem Eng","Nat Mach Intell","Nat Ecol Evol","Nat Biomed Eng",
+      "J Am Chem Soc","JACS Au","ACS Synth Biol","ACS Chem Biol",
+      "Biochemistry","ACS Cent Sci","J Med Chem","ACS Catal",
+      "Org Lett","J Org Chem","Anal Chem","J Agric Food Chem",
+      "J Nat Prod","Angew Chem Int Ed Engl","J Antibiot","J Chem Inf Model",
+    ];
+    const pmSelected = F.pubmedJournals || [];
+    const pmSelSet = new Set(pmSelected);
+    const pmColors = [
+      '#B31B1B','#1A73E8','#2E8B57','#7C4DD9','#D97706',
+      '#D42A14','#00629B','#E65100','#0EA5A5','#5B6470',
+      '#B31B1B','#1A73E8','#2E8B57','#7C4DD9','#D97706',
+      '#D42A14','#00629B','#E65100','#0EA5A5','#5B6470',
+      '#B31B1B','#1A73E8','#2E8B57','#7C4DD9','#D97706',
+      '#D42A14','#00629B','#E65100','#0EA5A5','#5B6470',
+      '#B31B1B','#1A73E8','#2E8B57','#7C4DD9',
+    ];
+    const pmBgColors = [
+      '#FBEAEA','#E8F0FE','#E8F5EE','#F0EAFB','#FEF3E2',
+      '#FDE8E5','#E1EEF6','#FDE8D8','#E1F5F5','#EEF1F5',
+      '#FBEAEA','#E8F0FE','#E8F5EE','#F0EAFB','#FEF3E2',
+      '#FDE8E5','#E1EEF6','#FDE8D8','#E1F5F5','#EEF1F5',
+      '#FBEAEA','#E8F0FE','#E8F5EE','#F0EAFB','#FEF3E2',
+      '#FDE8E5','#E1EEF6','#FDE8D8','#E1F5F5','#EEF1F5',
+      '#FBEAEA','#E8F0FE','#E8F5EE','#F0EAFB',
+    ];
+    const pmUpdateSel = (name) => {
+      const cur = F.pubmedJournals || [];
+      const has = cur.includes(name);
+      const next = has ? cur.filter(x => x !== name) : [...cur, name];
+      this.setForm({ pubmedJournals: next });
+    };
+    const pmJournalToggles = ALL_PM_JOURNALS.map((name, i) => ({
+      name,
+      selected: pmSelSet.has(name),
+      color: pmSelSet.has(name) ? '#fff' : pmColors[i % pmColors.length],
+      bg: pmSelSet.has(name) ? pmColors[i % pmColors.length] : pmBgColors[i % pmBgColors.length],
+      opacity: pmSelSet.has(name) ? 1 : 0.55,
+      onClick: () => pmUpdateSel(name),
+    }));
+    const showPubMedJournals = !!(F.sources.PubMed !== false);
+    const selectAllPmJ = () => this.setForm({ pubmedJournals: [...ALL_PM_JOURNALS] });
+    const clearAllPmJ = () => this.setForm({ pubmedJournals: [] });
     const sources = Object.keys(SRC_META).map(name => {
       const on = F.sources[name] !== false;
       return { name, ...SRC_META[name], on, toggle: on?toggleOn:toggleOff, knob,
@@ -1060,6 +1335,7 @@ class Component extends DCLogic {
       nav,
       isFeed:S.screen==='feed', isTrends:S.screen==='trends', isReport:S.screen==='report',
       isLibrary:S.screen==='library', isSettings:S.screen==='settings',
+      isDeepSearch:S.screen==='deepsearch',
       topicTabs, feed:feedList,
       readTabs, sortTabs, hasIgnored, ignoredLabel, ignoredStyle, toggleIgnored,
       todayCount: R ? R.todayCount : todayCount,
@@ -1080,6 +1356,7 @@ class Component extends DCLogic {
       formEmail: F.email, setFormEmail: (e) => this.setForm({ email: e.target.value }),
       emailOn: !!F.channels.email,
       sources, channels,
+      showPubMedJournals, pmJournalToggles, selectAllPmJ, clearAllPmJ,
       incBackfill: () => this.setForm({ backfillN: Math.min(20, F.backfillN + 1) }),
       decBackfill: () => this.setForm({ backfillN: Math.max(1, F.backfillN - 1) }),
       saveMsg: S.saveMsg, loading: S.loading, notLoading: !S.loading,
@@ -1123,6 +1400,138 @@ class Component extends DCLogic {
         count: (S.trendSel.papers || []).length, empty: !(S.trendSel.papers || []).length,
       } : {},
       closeTrend: () => this.setState({ trendSel:null }),
+
+      // ===== Deep Search =====
+      isDeepSearch: S.screen==='deepsearch',
+      dsSearching: !!S.dsSearching,
+      dsNotSearching: !S.dsSearching,
+      dsSearchLabel: (S.dsResults && S.dsResults.length) ? '再次搜索' : '开始深度搜索',
+      dsSearchIcon: (S.dsResults && S.dsResults.length) ? '↻' : '🔍',
+      dsHasSearched: !!S.dsHasSearched,
+      dsSortKey: S.dsSortKey || 'if',
+      dsSortTabs: [['new','最新'],['if','影响因子']].map(x => ({
+        label: x[1], key: x[0],
+        style: 'font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:8px;cursor:pointer;' + ((S.dsSortKey||'if')===x[0] ? 'background:#16181D;color:#fff;' : 'color:#5B6470;background:#EEF1F5;'),
+        onClick: () => this.setState({ dsSortKey: x[0] }),
+      })),
+      dsTotal: (S.dsResults || []).length,
+      dsDetailOpen: !!S.dsSelected,
+      dsCloseDetail: () => this.setState({ dsSelected: null, dsNoteDraft: null }),
+      dsSelected: S.dsSelected ? (() => {
+        const p = S.dsSelected;
+        return { ...p,
+          contributions: p.contributions || [],
+          sourceColor: p.sourceColor || '#5B6470',
+          sourceBg: p.sourceBg || '#EEF1F5',
+        };
+      })() : {},
+      dsSelectedNote: S.dsNoteDraft || '',
+      dsSetNote: (e) => this.setState({ dsNoteDraft: e.target.value }),
+      dsSaveNote: () => {
+        const p = S.dsSelected;
+        if (!p || !R) return;
+        this.dsSave(p, { note: S.dsNoteDraft || '' });
+      },
+      dsSaveLabel: (() => {
+        const p = S.dsSelected;
+        if (!p) return '★ 收藏到文库';
+        return (R ? !!p.saved : !!S.saved[p.id]) ? '★ 已在文库' : '★ 收藏到文库';
+      })(),
+      dsToggleSave: async () => {
+        const p = S.dsSelected;
+        if (!p || !R) return;
+        const saved = !(R ? p.saved : S.saved[p.id]);
+        await this.dsSave(p, { saved });
+        this.setState({ dsSelected: { ...p, saved } });
+        this._dsPatchResult(p.extId, 'saved', saved);
+      },
+      dsResults: (() => {
+        const raw = S.dsResults || [];
+        const sortKey = S.dsSortKey || 'if';
+        const sorted = [...raw].sort((a, b) => {
+          if (sortKey === 'if') return (b.if || 0) - (a.if || 0);
+          if (sortKey === 'new') return (b.published || '').localeCompare(a.published || '');
+          return 0;
+        });
+        return sorted.map(p => ({
+        ...p, contributions: p.contributions || [],
+        open: () => this.setState({ dsSelected: p }),
+        // Same save/feedback logic as feed
+        saveIcon: R ? (p.saved ? '★' : '☆') : (S.saved[p.id] ? '★' : '☆'),
+        saveStyle: (() => {
+          const on = R ? !!p.saved : !!S.saved[p.id];
+          return 'font-size:12px;font-weight:700;padding:5px 9px;border-radius:7px;cursor:pointer;' + (on ? 'color:#C9970A;background:#FBF3DC;' : 'color:#8A929E;border:1px solid #E4E8ED;');
+        })(),
+        upStyle: (() => {
+          const active = R ? p.feedback==='up' : false;
+          return 'font-size:14px;padding:4px 7px;border-radius:7px;cursor:pointer;line-height:1;' + (active ? 'background:#E5F3EC;' : 'opacity:0.45;filter:grayscale(1);');
+        })(),
+        downStyle: (() => {
+          const active = R ? p.feedback==='down' : false;
+          return 'font-size:14px;padding:4px 7px;border-radius:7px;cursor:pointer;line-height:1;' + (active ? 'background:#FBE9E9;' : 'opacity:0.45;filter:grayscale(1);');
+        })(),
+        thumbUp: (e) => {
+          e.stopPropagation();
+          const next = R ? (p.feedback === 'up' ? '' : 'up') : 'up';
+          if (R) { this.dsSave(p, { feedback: next }); this._dsPatchResult(p.extId, 'feedback', next); }
+        },
+        thumbDown: (e) => {
+          e.stopPropagation();
+          const next = R ? (p.feedback === 'down' ? '' : 'down') : 'down';
+          if (R) { this.dsSave(p, { feedback: next }); this._dsPatchResult(p.extId, 'feedback', next); }
+        },
+        toggleSave: (e) => {
+          e.stopPropagation();
+          const saved = !(R ? p.saved : S.saved[p.id]);
+          if (R) { this.dsSave(p, { saved }); this._dsPatchResult(p.extId, 'saved', saved); }
+        },
+      }));
+      })(),
+      dsCanAddKw: (S.dsKeywords || ['','']).length < 3,
+      dsAddKw: () => this.setState(st => ({ dsKeywords: [...(st.dsKeywords || ['','']), ''] })),
+      dsKwFields: (S.dsKeywords || ['','']).map((term, i) => ({
+        no: i + 1,
+        color: KW_C[i % 3],
+        term,
+        placeholder: `关键词 ${i + 1}，如：${['protein design','deep learning','molecular dynamics'][i] || ''}`,
+        canRemove: (S.dsKeywords || ['','']).length > 1,
+        remove: () => this.setState(st => ({ dsKeywords: st.dsKeywords.filter((_, j) => j !== i) })),
+        onInput: (e) => {
+          const v = e.target.value;
+          this.setState(st => { const ks = [...(st.dsKeywords || ['',''])]; ks[i] = v; return { dsKeywords: ks }; });
+        },
+      })),
+      dsTimeOptions: [30, 90, 180, 365, 730, 1825, 3650, -1].map(d => ({
+        label: {30:'近 1 个月',90:'近 3 个月',180:'近 6 个月',365:'近 1 年',730:'近 2 年',1825:'近 5 年',3650:'近 10 年',[-1]:'不限'}[d],
+        style: 'font-size:12.5px;font-weight:700;padding:5px 13px;border-radius:8px;cursor:pointer;' + ((S.dsTimeRange||365)===d ? 'background:#fff;color:#16181D;box-shadow:0 1px 3px rgba(0,0,0,.12)' : 'color:#5B6470;'),
+        onClick: () => this.setState({ dsTimeRange: d }),
+      })),
+      dsSources: Object.keys(SRC_META).map(name => {
+        const on = F.sources[name] !== false;
+        const meta = SRC_META[name];
+        return { name, ...meta, opacity: on ? 1 : 0.35,
+          onToggle: () => this.setState(st => ({ form: { ...st.form, sources: { ...st.form.sources, [name]: !on } }, saveMsg: '' })),
+        };
+      }),
+      dsSearch: async () => {
+        const kws = (S.dsKeywords || ['','']).map(s => s.trim()).filter(Boolean);
+        if (!kws.length) return;
+        this.setState({ dsSearching: true, dsResults: [], dsHasSearched: false });
+        const base = this.api();
+        if (!base) { this.setState({ dsSearching: false, dsResults: [], dsHasSearched: true }); return; }
+        try {
+          const r = await fetch(base + '/deep-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ keywords: kws, time_range_days: S.dsTimeRange || 365, sources: F.sources }),
+          });
+          const data = await r.json();
+          this.setState({ dsResults: data.results || [], dsSearching: false, dsHasSearched: true });
+        } catch (e) {
+          console.warn('[deep-search] error:', e);
+          this.setState({ dsSearching: false, dsHasSearched: true });
+        }
+      },
     };
   }
 }

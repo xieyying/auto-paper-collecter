@@ -28,6 +28,18 @@
 
 ## 🆕 最新更新 · What's New
 
+### ✨ v2.0 — 深度搜索与精准期刊过滤 · 2026-07-06
+
+<table>
+<tr><td>🔍&nbsp;<b>深度搜索</b></td><td>新增<b>深度搜索</b>模式：多关键词 AND 组合 + 时间范围 + 来源选择，支持按影响因子/日期排序，每篇可收藏/👍/👎/写笔记</td></tr>
+<tr><td>📊&nbsp;<b>影响因子</b></td><td>从 <b>2026IF.xlsx</b>（JCR 2025，42,201 条记录）加载期刊影响因子，在结果中直接展示</td></tr>
+<tr><td>🔬&nbsp;<b>PubMed / PMC</b></td><td>新增 <b>PubMed</b>（MEDLINE 生物医学文献）与 <b>PMC</b>（PubMed Central 全文库）数据源，支持 ISSN 级期刊过滤</td></tr>
+<tr><td>📰&nbsp;<b>更多期刊源</b></td><td>新增 <b>Nature</b> 系列（Nature · Nat. Commun. 等）、<b>ACS</b>（JACS · ACS SynBio 等）期刊数据源，通过 ISSN/CrossRef 检索</td></tr>
+<tr><td>🧬&nbsp;<b>bioRxiv / ChemRxiv</b></td><td>新增 <b>bioRxiv</b>（生物学预印本）与 <b>ChemRxiv</b>（化学预印本）数据源</td></tr>
+<tr><td>⚙️&nbsp;<b>期刊限定</b></td><td>订阅设置中新增 <b>PubMed 期刊选择器</b>：34 种期刊多选，不选则搜全库；期刊选择在 <b>Crossref / PubMed / PMC</b> 三个来源间共享</td></tr>
+<tr><td>🔁&nbsp;<b>逐刊迭代</b></td><td>Crossref / PubMed / PMC 改为<b>每本期刊单独查询</b>，保证每个选中期刊都有结果；ISSN（pISSN + eISSN）预解析，无 ISSN 时自动降级</td></tr>
+</table>
+
 ### ✨ v1.1 — 体验与智能双升级 · 2026-06-27
 
 <table>
@@ -90,10 +102,16 @@
 | | 功能 | 说明 |
 |:--:|---|---|
 | 📰 | **今日文献流** | 多源聚合 + 按真实发表时间排序；无新文时智能回填；顶栏实时搜索 |
-| 🧠 | **LLM 智能抓取** | 关键词联想扩展 + 计算机领域相关性过滤，召回更广、噪声更少 |
+| 🔍 | **深度搜索** | 多关键词 AND 组合 + 时间范围 + 来源选择，按影响因子/日期排序，每篇可收藏/反馈/写笔记 |
+| 🧠 | **LLM 智能抓取** | 关键词联想扩展 + 相关性过滤，召回更广、噪声更少 |
 | 🔥 | **领域热点** | LLM 聚合成主流子领域，统计近 7/30 天增量，Top 3 给出**详细方向总结**与对应论文 |
-| ⭐ | **收藏与笔记** | 一键收藏、写笔记、复制 **BibTeX** |
+| ⭐ | **收藏与笔记** | 一键收藏、写笔记（失焦自动保存）、复制 **BibTeX** |
 | 🗞️ | **每周报告** | 每周精选 + 分方向小结，自动归档 |
+| 📊 | **影响因子** | 从 JCR 2025 加载 42,000+ 期刊 IF，结果中直接展示 |
+| 🔬 | **PubMed / PMC** | 生物医学文献 + 全文库，支持 ISSN 级期刊过滤 |
+| 📰 | **Nature / ACS** | 顶刊数据源，通过 ISSN + Crossref API 精准检索 |
+| 🧬 | **bioRxiv / ChemRxiv** | 生物学与化学预印本 |
+| ⚙️ | **期刊限定** | 34 种期刊多选，自定义过滤范围，不选则搜全库 |
 | 🔔 | **推送通知** | 浏览器通知 + 可选 **SMTP 邮件摘要**（定时发送） |
 | 🛰️ | **GitHub 实时源** | 顺带追踪与主题相关的最新代码仓库 / 论文实现 |
 | 🌏 | **本地化** | 界面与摘要中文友好，时区可配 |
@@ -108,17 +126,24 @@ flowchart LR
     B --> S1[arXiv]
     B --> S2[Crossref]
     B --> S3[Semantic Scholar]
-    B --> S4[GitHub]
-    B --> S5[RSS]
+    B --> S4[PubMed / PMC]
+    B --> S5[Nature / ACS]
+    B --> S6[bioRxiv / ChemRxiv]
+    B --> S7[GitHub]
+    B --> S8[RSS]
     S1 --> M[🧹 跨源去重]
     S2 --> M
     S3 --> M
     S4 --> M
     S5 --> M
+    S6 --> M
+    S7 --> M
+    S8 --> M
     M --> F{{🎯 LLM 相关性过滤}}
     F --> Z{{✍️ LLM 中文摘要}}
-    Z --> DB[(🗄️ SQLite)]
-    DB --> UI([📊 仪表盘 / 邮件 / 周报])
+    Z --> IF[📊 IF 标注]
+    IF --> DB[(🗄️ SQLite)]
+    DB --> UI([📊 仪表盘 / 搜索 / 邮件 / 周报])
 ```
 
 <div align="center"><sub>纯 Python 跑确定性流程，把"判断"交给 LLM —— 既快又准。</sub></div>
@@ -204,8 +229,14 @@ $EDITOR ~/.claude/skills/auto-paper-collecter/state/config.json   # 编辑你的
 | 来源 | 内容 | 备注 |
 |---|---|---|
 | **arXiv** | 预印本（官方 API） | 计算机领域主力 |
-| **Crossref** | 期刊/会议元数据 | 含 IEEE·ACM，仅元数据 + 摘要 |
+| **Crossref** | 期刊/会议元数据 | 含 IEEE·ACM，按期刊过滤，逐刊迭代查询 |
 | **Semantic Scholar** | 综合学术检索 | 自带 TLDR；限定计算机领域 |
+| **PubMed** | MEDLINE 生物医学文献 | NCBI E-utilities，ISSN 级期刊过滤，按 IF 排序 |
+| **PMC** | PubMed Central 全文库 | NCBI E-utilities，含正文检索 |
+| **Nature** | Nature 系列期刊 | 通过 Crossref API + ISSN 过滤 |
+| **ACS** | ACS 系列期刊 | 通过 Crossref API + ISSN 过滤 |
+| **bioRxiv** | 生物学预印本 | 官方 API |
+| **ChemRxiv** | 化学预印本 | 官方 API |
 | **GitHub** | 实时仓库 / 论文代码 | 作为补充信号 |
 | **HuggingFace** | 热门预印本（社区点赞） | 与 arXiv 互补 |
 | **Papers with Code** | 论文 + 官方代码 | 公共 API 可用时生效 |
@@ -225,7 +256,9 @@ $EDITOR ~/.claude/skills/auto-paper-collecter/state/config.json   # 编辑你的
 | `GET`  | `/api/trends?domain=&window=7` | 领域热点（Top3 + 各方向增量 + 论文） |
 | `GET`  | `/api/report/weekly` | 生成 / 取最新周报 |
 | `POST` | `/api/library/{paper_id}` | `{saved, read, note}` 收藏 / 已读 / 笔记 |
-| `GET·PUT` | `/api/settings` | 关键词 / 来源 / 时间 / 回填 N / 推送 / 邮箱 |
+| `GET·PUT` | `/api/settings` | 关键词 / 来源 / 时间 / 回填 N / 推送 / 邮箱 / 期刊选择 |
+| `POST` | `/api/deep-search` | 深度搜索：多关键词 AND 组合 + 时间范围 + 来源选择 |
+| `POST` | `/api/save-by-ref` | 按 ext_id 收藏/评分（用于深度搜索瞬时结果） |
 | `POST` | `/api/test-email` | 发送一封测试邮件验证 SMTP |
 
 </details>
@@ -241,8 +274,12 @@ $EDITOR ~/.claude/skills/auto-paper-collecter/state/config.json   # 编辑你的
 - [x] 更多数据源（HuggingFace · Papers with Code）
 - [x] 一键 Docker 部署
 - [x] 移动端适配 + 深色模式 + 👍/👎 反馈学习 + 多渠道推送
+- [x] 深度搜索（多关键词 AND 组合 + 时间范围）
+- [x] 影响因子展示（2026IF.xlsx）
+- [x] PubMed / PMC 数据源 + 期刊限定
+- [x] Nature / ACS / bioRxiv / ChemRxiv 数据源
+- [x] 逐刊迭代查询 + ISSN（pISSN/eISSN）预解析
 - [ ] 多用户 + 鉴权（PostgreSQL）
-- [ ] 移动端适配
 
 > 欢迎在 [Issues](../../issues) 里提你想要的功能！🙌
 

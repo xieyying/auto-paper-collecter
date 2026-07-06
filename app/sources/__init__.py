@@ -15,3 +15,4 @@ class RawItem:
     doi: str = ""
     published_at: Optional[dt.datetime] = None
     tldr: str = ""        # some sources (Semantic Scholar) provide one
+    issn: str = ""         # journal ISSN for impact factor / journal filtering

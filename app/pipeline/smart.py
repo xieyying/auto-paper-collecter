@@ -17,23 +17,25 @@ from ..services.ai import chat
 
 _ARR = re.compile(r"\[.*\]", re.S)
 
-EXPAND_SYS = (
-    "你是计算机科学文献检索助手。用户给出一个研究关键词。"
-    "请做“联想式扩展”：生成 5-7 个与之高度相关的英文学术检索式。"
-    "不仅包括同义词、全称与常见写法，还要包括紧邻的子方向、关键技术、方法与典型应用，"
-    "以便把该主题最新、最相关的论文尽量召回。"
-    "所有检索式都必须仍属于计算机科学领域、且与原关键词强相关，避免过度泛化跑题。"
-    "严格只输出 JSON 字符串数组，例如对“C2Rust”可输出 "
-    '["C2Rust","C-to-Rust translation","automatic C to Rust transpilation",'
-    '"memory-safe systems programming in Rust","translating legacy C code to Rust",'
-    '"unsafe code elimination Rust","LLM-based code transpilation"]，不要任何其它文字。'
-)
+def _expand_sys(domain: str = "") -> str:
+    field = domain or "所有科学领域"
+    return (
+        f"你是{field}文献检索助手。用户给出一个研究关键词。"
+        f"请做\u201c联想式扩展\u201d：生成 5-7 个与之高度相关的英文学术检索式。"
+        f"不仅包括同义词、全称与常见写法，还要包括紧邻的子方向、关键技术、方法与典型应用，"
+        f"以便把该主题最新、最相关的论文尽量召回。"
+        f"所有检索式都必须仍属于{field}、且与原关键词强相关，避免过度泛化跑题。"
+        f"严格只输出 JSON 字符串数组，不要任何其它文字。"
+    )
 
-FILTER_SYS = (
-    "你是计算机科学文献筛选助手。给定一个研究关键词和若干论文（标题 + 来源/期刊）。"
-    "逐篇判断是否同时满足：①属于计算机科学/计算机工程领域；且 ②与该关键词主题直接相关。"
-    "严格只输出 JSON 数组，每项形如 {\"i\":序号,\"keep\":true 或 false}，不要任何其它文字。"
-)
+
+def _filter_sys(domain: str = "") -> str:
+    field = domain or "所有科学领域"
+    return (
+        f"你是{field}文献筛选助手。给定一个研究关键词和若干论文（标题 + 来源/期刊）。"
+        f"逐篇判断是否同时满足：\u2460属于{field}；且 \u2461与该关键词主题直接相关。"
+        f"严格只输出 JSON 数组，每项形如 {{\"i\":序号,\"keep\":true 或 false}}，不要任何其它文字。"
+    )
 
 
 # Cache expansions for the process lifetime — the same keyword/domain expands to
@@ -51,7 +53,7 @@ async def expand_queries(keyword: str, domain: str = "") -> list:
         return _expand_cache[ck]
     user = f"关键词：{kw}" + (f"\n领域：{domain}" if domain else "")
     raw = await chat(
-        [{"role": "system", "content": EXPAND_SYS}, {"role": "user", "content": user}],
+        [{"role": "system", "content": _expand_sys(domain)}, {"role": "user", "content": user}],
         temperature=0.2, max_tokens=300,
     )
     queries = [kw]
@@ -98,7 +100,7 @@ async def filter_relevant(items: list, keyword: str, domain: str = "",
         user = (f"关键词：{keyword}" + (f"（领域：{domain}）" if domain else "")
                 + neg_block + "\n\n论文列表：\n" + listing)
         raw = await chat(
-            [{"role": "system", "content": FILTER_SYS}, {"role": "user", "content": user}],
+            [{"role": "system", "content": _filter_sys(domain)}, {"role": "user", "content": user}],
             temperature=0.0, max_tokens=1200, timeout=90,
         )
         if not raw:

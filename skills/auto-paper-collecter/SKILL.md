@@ -1,6 +1,6 @@
 ---
 name: auto-paper-collecter
-description: Personal research-paper radar. Fetches the latest papers and code repos for the user's keyword subscriptions across arXiv, Crossref (IEEE/ACM), Semantic Scholar, GitHub, HuggingFace, Papers with Code and RSS; deduplicates against history; then YOU (the assistant) expand the queries, filter for computer-science relevance, write Chinese summaries, detect hot sub-fields, and emit a Markdown + HTML digest (optionally emailed). Use when the user asks to "run my paper radar / 文献雷达", "check for new papers", "what's new in my topics", "今天有什么新论文 / 最新文献", "today's research digest", or to configure their keyword subscriptions / sources / schedule.
+description: Personal research-paper radar. Fetches the latest papers and code repos for the user's keyword subscriptions across arXiv, Crossref (IEEE/ACM), Semantic Scholar, GitHub, HuggingFace, Papers with Code, RSS, bioRxiv and ChemRxiv; deduplicates against history; then YOU (the assistant) expand the queries, filter for computer-science relevance, write Chinese summaries, detect hot sub-fields, and emit a Markdown + HTML digest (optionally emailed). Use when the user asks to "run my paper radar / 文献雷达", "check for new papers", "what's new in my topics", "今天有什么新论文 / 最新文献", "today's research digest", or to configure their keyword subscriptions / sources / schedule.
 ---
 
 # auto-paper-collecter (skill)
@@ -25,7 +25,7 @@ Run scripts from `scripts/`:  `cd skill/scripts && python3 <script>.py`
 ## Config — `state/config.json`
 - `keywords`: up to ~3 topic strings to track.
 - `domain`: the field to constrain relevance to (default `computer science`).
-- `sources`: toggle `arXiv / Crossref / Semantic Scholar / GitHub / HuggingFace / PapersWithCode / RSS`.
+- `sources`: toggle `arXiv / Crossref / Semantic Scholar / GitHub / HuggingFace / PapersWithCode / RSS / bioRxiv / ChemRxiv`.
 - `lookback_days`: how far back to fetch (dedup stops repeats anyway).
 - `max_per_source`, `rss_feeds`.
 

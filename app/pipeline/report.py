@@ -17,7 +17,7 @@ def _iso_week_label(d):
     y, w, _ = d.isocalendar()
     start = d - dt.timedelta(days=d.weekday())
     end = start + dt.timedelta(days=6)
-    return f"{start.strftime('%Y年%-m月%-d日')} – {end.strftime('%-m月%-d日')}", w
+    return (f"{start.year}年{start.month}月{start.day}日 – {end.month}月{end.day}日", w)
 
 
 async def build_weekly_report():

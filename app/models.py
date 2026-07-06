@@ -44,6 +44,7 @@ class UserSettings(Base):
     backfill_n = Column(Integer, default=5)
     channels = Column(Text, default="{}")              # json {email:bool, browser:bool}
     email = Column(String, default="")
+    pubmed_journals = Column(Text, default="[]")       # json list of selected journal names
 
 
 class TrendSnapshot(Base):

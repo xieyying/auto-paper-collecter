@@ -98,7 +98,7 @@ def src_s2(query, n):
     if key:
         headers["x-api-key"] = key
     data = C.http_json("https://api.semanticscholar.org/graph/v1/paper/search?" + C.qs({
-        "query": query, "limit": n, "fieldsOfStudy": "Computer Science",
+        "query": query, "limit": n,
         "fields": "title,abstract,authors,url,year,venue,tldr,publicationDate,externalIds"}),
         headers=headers)
     out = []

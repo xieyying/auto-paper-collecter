@@ -38,7 +38,7 @@ def config():
                     "GitHub": True, "HuggingFace": True, "PapersWithCode": True,
                     "RSS": True},
         "lookback_days": 5, "max_per_source": 15,
-        "rss_feeds": ["http://export.arxiv.org/rss/cs.PL"],
+        "rss_feeds": ["http://export.arxiv.org/rss/q-bio"],
     })
 
 

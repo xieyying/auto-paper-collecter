@@ -3,9 +3,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # AI gateway (OpenAI-compatible)
-    AI_BASE_URL: str = "https://api.openai.com/v1"
+    AI_BASE_URL: str = "https://api.deepseek.com/v1"
     AI_API_KEY: str = ""
-    AI_MODEL: str = "gpt-4o-mini"
+    AI_MODEL: str = "deepseek-chat"
     AI_ENABLED: bool = True
 
     DATABASE_URL: str = "sqlite:///./scholarpulse.db"
@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     TIMEZONE: str = "Asia/Shanghai"
     BACKFILL_N: int = 5
 
-    RSS_FEEDS: str = "http://export.arxiv.org/rss/cs.PL"
+    RSS_FEEDS: str = "http://export.arxiv.org/rss/cs.PL,https://connect.biorxiv.org/biorxiv_xml.php?subject=all,https://chemrxiv.org/engage/rss/chemrxiv"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

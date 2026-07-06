@@ -10,6 +10,7 @@ from .db import get_db, SessionLocal
 from .config import settings
 from .models import Paper, SavedItem, UserSettings, TrendSnapshot, WeeklyReport
 from .pipeline.fetch import run_refresh, get_or_create_settings, is_refreshing, get_progress
+from .pipeline.deep_search import deep_search
 from .pipeline.trends import compute_trends
 from .pipeline.report import build_weekly_report
 from .services.email import send_email
@@ -47,6 +48,12 @@ SRC_STYLE = {
     "HuggingFace":     {"color": "#D97706", "bg": "#FEF3E2"},
     "PapersWithCode":  {"color": "#0EA5A5", "bg": "#E1F5F5"},
     "学术新闻":         {"color": "#7C4DD9", "bg": "#F0EAFB"},
+    "Nature":          {"color": "#D42A14", "bg": "#FDE8E5"},
+    "ACS":             {"color": "#00629B", "bg": "#E1EEF6"},
+    "PubMed":         {"color": "#2E8B57", "bg": "#E8F5EE"},
+    "PMC":            {"color": "#E65100", "bg": "#FDE8D8"},
+    "bioRxiv":        {"color": "#D66B1F", "bg": "#FDF0E5"},
+    "ChemRxiv":        {"color": "#8B5CF6", "bg": "#F0EAFE"},
 }
 KW_COLORS = ["#2A5BD7", "#1F8A5B", "#7C4DD9"]
 
@@ -158,9 +165,16 @@ def bootstrap(db: Session = Depends(get_db)):
                  "desc": {"arXiv": "预印本", "Crossref": "期刊/会议元数据",
                           "Google Scholar": "综合学术检索", "GitHub": "实时仓库/论文代码",
                           "HuggingFace": "热门预印本", "PapersWithCode": "论文+代码",
-                          "学术新闻": "RSS 动态"}.get(n, "")}
+                          "学术新闻": "RSS 动态",
+                          "Nature": "Nature 系列期刊", "ACS": "JACS/ACS SynBio 等",
+                          "PubMed": "PubMed/MEDLINE 生物医学",
+                          "PMC": "PubMed Central 全文库",
+                          "bioRxiv": "生物学预印本",
+                          "ChemRxiv": "化学预印本"}.get(n, "")}
                 for n in ["arXiv", "Crossref", "Google Scholar", "GitHub",
-                          "HuggingFace", "PapersWithCode", "学术新闻"]]
+                          "HuggingFace", "PapersWithCode", "学术新闻",
+                          "Nature", "ACS", "PubMed", "PMC",
+                          "bioRxiv", "ChemRxiv"]]
 
     return {
         "configured": bool(keywords),
@@ -174,6 +188,7 @@ def bootstrap(db: Session = Depends(get_db)):
         "keywords": kw_objs, "sources": src_objs,
         "channels": channels, "domain": s.domain or "",
         "refreshTimes": s.refresh_times, "email": s.email or "",
+        "pubmedJournals": json.loads(s.pubmed_journals or "[]"),
     }
 
 
@@ -270,6 +285,7 @@ def get_settings(db: Session = Depends(get_db)):
         "domain": s.domain, "sources": json.loads(s.sources or "{}"),
         "refresh_times": s.refresh_times, "backfill_n": s.backfill_n,
         "channels": json.loads(s.channels or "{}"), "email": s.email,
+        "pubmedJournals": json.loads(s.pubmed_journals or "[]"),
     }
 
 
@@ -290,5 +306,73 @@ def put_settings(body: dict = Body(...), db: Session = Depends(get_db)):
         s.channels = json.dumps(body["channels"], ensure_ascii=False)
     if "email" in body:
         s.email = body["email"]
+    if "pubmedJournals" in body:
+        s.pubmed_journals = json.dumps(body["pubmedJournals"], ensure_ascii=False)
+    elif "pubmed_journals" in body:
+        s.pubmed_journals = json.dumps(body["pubmed_journals"], ensure_ascii=False)
     db.commit()
     return {"ok": True}
+
+
+@router.post("/deep-search")
+async def deep_search_endpoint(body: dict = Body(...), db: Session = Depends(get_db)):
+    """Deep search: AND-combined expanded keywords with time range."""
+    keywords = body.get("keywords", [])
+    time_range = body.get("time_range_days", 365)
+    sources = body.get("sources")
+    # Convert sources list to dict if needed (deep_search expects dict-like)
+    if isinstance(sources, list):
+        sources = {s: True for s in sources}
+    # Set PubMed journals from settings
+    s = get_or_create_settings(db)
+    pm_journals = json.loads(s.pubmed_journals or "null")
+    from app.sources.pubmed import set_journals as set_pj
+    set_pj(pm_journals if isinstance(pm_journals, list) else None)
+    results = await deep_search(keywords, time_range, sources, db=db)
+    return {"results": results, "total": len(results)}
+
+
+@router.post("/save-by-ref")
+def save_by_ref(body: dict = Body(...), db: Session = Depends(get_db)):
+    """Save/rate a paper by ext_id (for transient deep-search results)."""
+    ext_id = body.get("extId", "")
+    if not ext_id:
+        return {"ok": False}
+    paper = db.query(Paper).filter(Paper.ext_id == ext_id).first()
+    if not paper:
+        paper = Paper(
+            ext_id=ext_id,
+            source=body.get("source", ""),
+            title=body.get("title", ""),
+            abstract=body.get("abstract", ""),
+            authors=body.get("authors", "[]"),
+            url=body.get("url", ""),
+            venue=body.get("venue", ""),
+            doi=body.get("doi", ""),
+            published_at=None,
+            fetched_at=dt.datetime.utcnow(),
+            tldr=body.get("tldr", ""), method="", contributions="[]",
+        )
+        pub_str = body.get("published", "")
+        if pub_str:
+            try:
+                paper.published_at = dt.datetime.strptime(pub_str, "%Y-%m-%d")
+            except ValueError:
+                pass
+        db.add(paper)
+        db.flush()
+    sv = db.query(SavedItem).filter(SavedItem.paper_id == paper.id).first()
+    if not sv:
+        sv = SavedItem(paper_id=paper.id)
+        db.add(sv)
+    for f in ("saved", "read"):
+        if f in body:
+            setattr(sv, f, bool(body[f]))
+    if "note" in body:
+        sv.note = str(body["note"])
+    if "feedback" in body:
+        fb = str(body["feedback"])
+        sv.feedback = fb if fb in ("up", "down") else ""
+    sv.updated_at = dt.datetime.utcnow()
+    db.commit()
+    return {"ok": True, "paper_id": paper.id}

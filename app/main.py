@@ -16,7 +16,8 @@ Base.metadata.create_all(bind=engine)
 
 def _migrate():
     """Add columns introduced after a DB was first created (SQLite-safe, idempotent)."""
-    cols = [("saved_items", "feedback", "VARCHAR DEFAULT ''")]
+    cols = [("saved_items", "feedback", "VARCHAR DEFAULT ''"),
+            ("user_settings", "pubmed_journals", "TEXT DEFAULT '[]'")]
     with engine.begin() as conn:
         for table, col, decl in cols:
             try:
